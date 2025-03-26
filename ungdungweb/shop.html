@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASCO - Shop</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="shop.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>FASCO</h1>
+                </div>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="homepage.html">Home</a></li>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="#">New Arrivals</a></li>
+                        <li><a href="#">Packages</a></li>
+                        <li><a href="signin.html">Sign In</a></li>
+                    </ul>
+                </nav>
+                <div class="sign-up">
+                    <a href="#" class="btn btn-dark">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Shop Page Content -->
+    <section class="shop-page">
+        <div class="container">
+            <div class="shop-content">
+                <!-- Sidebar Filters -->
+                <div class="sidebar-filters">
+                    <div class="filter-section">
+                        <h3>Filters</h3>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <h4>Size</h4>
+                        <div class="size-options">
+                            <button class="size-btn">S</button>
+                            <button class="size-btn">M</button>
+                            <button class="size-btn">L</button>
+                            <button class="size-btn">XL</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <h4>Colors</h4>
+                        <div class="color-options">
+                            <button class="color-btn" style="background-color: red;"></button>
+                            <button class="color-btn" style="background-color: orange;"></button>
+                            <button class="color-btn" style="background-color: yellow;"></button>
+                            <button class="color-btn" style="background-color: green;"></button>
+                            <button class="color-btn" style="background-color: blue;"></button>
+                            <button class="color-btn" style="background-color: purple;"></button>
+                            <button class="color-btn" style="background-color: pink;"></button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <h4>Prices</h4>
+                        <div class="price-range">
+                            <input type="range" min="0" max="500" step="50">
+                            <div class="price-labels">
+                                <span>$0</span>
+                                <span>$500</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <h4>Brands</h4>
+                        <div class="brand-options">
+                            <label><input type="checkbox"> Valentino</label>
+                            <label><input type="checkbox"> Gucci</label>
+                            <label><input type="checkbox"> Prada</label>
+                            <label><input type="checkbox"> Chanel</label>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <h4>Collections</h4>
+                        <div class="collection-options">
+                            <label><input type="checkbox"> All Products</label>
+                            <label><input type="checkbox"> New Arrivals</label>
+                            <label><input type="checkbox"> Best Sellers</label>
+                            <label><input type="checkbox"> Sale</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="products-grid1">
+                    <div class="products-header1">
+                        <h2>Fashion</h2>
+                        <div class="sort-options1">
+                            <select>
+                                <option>Best Selling</option>
+                                <option>Price: Low to High</option>
+                                <option>Price: High to Low</option>
+                                <option>Newest Arrivals</option>
+                            </select>
+                            <div class="view-options1">
+                                <button class="view-btn grid-view active"><i class="fas fa-th"></i></button>
+                                <button class="view-btn list-view"><i class="fas fa-list"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-listings1">
+                        <div class="product-card1">
+                            <div class="product-image1">
+                                <img src="images/redhat.png" alt="Red Hat">
+                                <div class="product-actions1">
+                                    <button class="quick-view">Quick View</button>
+                                    <button class="add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="product-info1">
+                                <h3>Rounded Red Hat</h3>
+                                <div class="product-colors1">
+                                    <span class="color-dot" style="background-color: red;"></span>
+                                    <span class="color-dot" style="background-color: black;"></span>
+                                </div>
+                                <div class="product-price1">$6.00</div>
+                            </div>
+                        </div>
+
+                        <div class="product-card1">
+                            <div class="product-image1">
+                                <img src="images/blendshirt.png" alt="Linen Shirt">
+                                <div class="product-actions1">
+                                    <button class="quick-view">Quick View</button>
+                                    <button class="add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="product-info1">
+                                <h3>Linen Blend Shirt</h3>
+                                <div class="product-colors1">
+                                    <span class="color-dot" style="background-color: gray;"></span>
+                                    <span class="color-dot" style="background-color: black;"></span>
+                                </div>
+                                <div class="product-price1">$17.00</div>
+                            </div>
+                        </div>
+
+                        <div class="product-card1">
+                            <div class="product-image1">
+                                <img src="images/longslevcoat.png" alt="Long Sleeve Coat">
+                                <div class="product-actions1">
+                                    <button class="quick-view">Quick View</button>
+                                    <button class="add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="product-info1">
+                                <h3>Long Sleeve Coat</h3>
+                                <div class="product-colors1">
+                                    <span class="color-dot" style="background-color: black;"></span>
+                                    <span class="color-dot" style="background-color: gray;"></span>
+                                </div>
+                                <div class="product-price1">$106.00</div>
+                            </div>
+                        </div>
+
+                        <!-- Additional product cards would follow similar structure -->
+                        <div class="product-card1">
+                            <div class="product-image1">
+                                <img src="images/longslevcoat.png" alt="Long Sleeve Coat">
+                                <div class="product-actions1">
+                                    <button class="quick-view">Quick View</button>
+                                    <button class="add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="product-info1">
+                                <h3>Long Sleeve Coat</h3>
+                                <div class="product-colors1">
+                                    <span class="color-dot" style="background-color: black;"></span>
+                                    <span class="color-dot" style="background-color: gray;"></span>
+                                </div>
+                                <div class="product-price1">$106.00</div>
+                            </div>
+                        </div>
+                        <div class="product-card1">
+                            <div class="product-image1">
+                                <img src="images/longslevcoat.png" alt="Long Sleeve Coat">
+                                <div class="product-actions1">
+                                    <button class="quick-view">Quick View</button>
+                                    <button class="add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="product-info1">
+                                <h3>Long Sleeve Coat</h3>
+                                <div class="product-colors1">
+                                    <span class="color-dot" style="background-color: black;"></span>
+                                    <span class="color-dot" style="background-color: gray;"></span>
+                                </div>
+                                <div class="product-price1">$106.00</div>
+                            </div>
+                        </div>
+                        <div class="product-card1">
+                            <div class="product-image1">
+                                <img src="images/longslevcoat.png" alt="Long Sleeve Coat">
+                                <div class="product-actions1">
+                                    <button class="quick-view">Quick View</button>
+                                    <button class="add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="product-info1">
+                                <h3>Long Sleeve Coat</h3>
+                                <div class="product-colors1">
+                                    <span class="color-dot" style="background-color: black;"></span>
+                                    <span class="color-dot" style="background-color: gray;"></span>
+                                </div>
+                                <div class="product-price1">$106.00</div>
+                            </div>
+                        </div>
+                        <div class="product-card1">
+                            <div class="product-image1">
+                                <img src="images/longslevcoat.png" alt="Long Sleeve Coat">
+                                <div class="product-actions1">
+                                    <button class="quick-view">Quick View</button>
+                                    <button class="add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="product-info1">
+                                <h3>Long Sleeve Coat</h3>
+                                <div class="product-colors1">
+                                    <span class="color-dot" style="background-color: black;"></span>
+                                    <span class="color-dot" style="background-color: gray;"></span>
+                                </div>
+                                <div class="product-price1">$106.00</div>
+                            </div>
+                        </div>
+                        <div class="product-card1">
+                            <div class="product-image1">
+                                <img src="images/longslevcoat.png" alt="Long Sleeve Coat">
+                                <div class="product-actions1">
+                                    <button class="quick-view">Quick View</button>
+                                    <button class="add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="product-info1">
+                                <h3>Long Sleeve Coat</h3>
+                                <div class="product-colors1">
+                                    <span class="color-dot" style="background-color: black;"></span>
+                                    <span class="color-dot" style="background-color: gray;"></span>
+                                </div>
+                                <div class="product-price1">$106.00</div>
+                            </div>
+                        </div>
+                        <div class="product-card1">
+                            <div class="product-image1">
+                                <img src="images/longslevcoat.png" alt="Long Sleeve Coat">
+                                <div class="product-actions1">
+                                    <button class="quick-view">Quick View</button>
+                                    <button class="add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                            <div class="product-info1">
+                                <h3>Long Sleeve Coat</h3>
+                                <div class="product-colors1">
+                                    <span class="color-dot" style="background-color: black;"></span>
+                                    <span class="color-dot" style="background-color: gray;"></span>
+                                </div>
+                                <div class="product-price1">$106.00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pagination">
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn next">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section (Same as Homepage) -->
+    <section class="features">
+        <div class="container">
+            <div class="features-content">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h3>High Quality</h3>
+                        <p>Crafted from top materials</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h3>Warranty Protection</h3>
+                        <p>Over 2 years</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h3>Free Shipping</h3>
+                        <p>Order over $150</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h3>24 / 7 Support</h3>
+                        <p>Dedicated support</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (Same as Homepage) -->
+    <footer>
+        <div class="container">
+            <div class="footer-top">
+                <div class="logo">
+                    <h2>FASCO</h2>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-link-group">
+                        <h3>Support Center</h3>
+                        <ul>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Shipping</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-link-group">
+                        <h3>About Us</h3>
+                        <ul>
+                            <li><a href="#">Our Story</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Careers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-link-group">
+                        <h3>Help</h3>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                            <li><a href="#">Return Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 FASCO. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/beaver000"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/shibaa_000/"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-pinterest-p"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="shop.js"></script>
+</body>
+</html>
