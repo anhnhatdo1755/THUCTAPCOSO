@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASCO - Shopping Cart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Additional Cart Page Styles */
+        .cart-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+
+        .cart-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: #333;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            margin: 0 8px;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .cart-table th {
+            text-align: left;
+            padding: 15px 0;
+            font-weight: 600;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-table th:last-child {
+            text-align: right;
+        }
+
+        .cart-table td {
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .cart-table td:last-child {
+            text-align: right;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .product-image {
+            width: 100px;
+            height: 130px;
+            margin-right: 20px;
+            border: 1px solid #eee;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-details h3 {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .product-color {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .remove-btn:hover {
+            color: #000;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 110px;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .quantity-btn:hover {
+            color: #000;
+        }
+
+        .quantity-input {
+            width: 50px;
+            border: none;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+        }
+
+        .quantity-input:focus {
+            outline: none;
+        }
+
+        .gift-wrap {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .gift-wrap input {
+            margin-right: 10px;
+        }
+
+        .cart-summary {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .subtotal {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px;
+            padding: 15px 0;
+            border-top: 1px solid #eee;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            max-width: 400px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 15px 0;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background-color: #333;
+        }
+
+        .view-cart-btn {
+            width: 100%;
+            max-width: 400px;
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #000;
+            padding: 15px 0;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .view-cart-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        @media (max-width: 768px) {
+            .cart-table thead {
+                display: none;
+            }
+
+            .cart-table, .cart-table tbody, .cart-table tr, .cart-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .cart-table tr {
+                margin-bottom: 20px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .cart-table td {
+                text-align: right;
+                padding: 10px 0;
+                border-bottom: none;
+                position: relative;
+            }
+
+            .cart-table td:before {
+                content: attr(data-label);
+                float: left;
+                font-weight: 600;
+            }
+
+            .product-info {
+                justify-content: flex-end;
+            }
+
+            .cart-summary {
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>FASCO</h1>
+                </div>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="homepage.html">Home</a></li>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="#">Products</a></li>
+                        <li><a href="#">Pages</a></li>
+                        <li><a href="signin.html">Sign In</a></li>
+                    </ul>
+                </nav>
+                <div class="icons-group">
+                    <a href="#" class="icon-link"><i class="fas fa-search"></i></a>
+                    <a href="#" class="icon-link"><i class="fas fa-user"></i></a>
+                    <a href="#" class="icon-link"><i class="far fa-heart"></i></a>
+                    <a href="cart.html" class="icon-link cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">1</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cart Section -->
+    <section class="cart-container">
+        <h1 class="cart-title">Shopping Cart</h1>
+        
+        <div class="breadcrumb">
+            <a href="homepage.html">Home</a>
+            <span>›</span>
+            <span>Your Shopping Cart</span>
+        </div>
+
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-label="Product">
+                        <div class="product-info">
+                            <div class="product-image">
+                                <img src="images/reddress.jpg" alt="Mini Dress With Ruffled Straps">
+                            </div>
+                            <div class="product-details">
+                                <h3>Mini Dress With Ruffled Straps</h3>
+                                <p class="product-color">Color: Red</p>
+                                <button class="remove-btn">Remove</button>
+                            </div>
+                        </div>
+                    </td>
+                    <td data-label="Price">$14.90</td>
+                    <td data-label="Quantity">
+                        <div class="quantity-control">
+                            <button class="quantity-btn decrease-btn">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="text" class="quantity-input" value="1" readonly>
+                            <button class="quantity-btn increase-btn">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td data-label="Total">$14.90</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="gift-wrap">
+            <input type="checkbox" id="gift-wrap-option">
+            <label for="gift-wrap-option">For $10.00 Please Wrap The Product</label>
+        </div>
+
+        <div class="cart-summary">
+            <div class="subtotal">
+                <span>Subtotal</span>
+                <span>$100.00</span>
+            </div>
+            <button class="checkout-btn">Checkout</button>
+            <button class="view-cart-btn">View Cart</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-top">
+                <div class="logo">
+                    <h2>FASCO</h2>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-link-group">
+                        <h3>Support Center</h3>
+                        <ul>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Shipping</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-link-group">
+                        <h3>About Us</h3>
+                        <ul>
+                            <li><a href="#">Our Story</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Careers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-link-group">
+                        <h3>Help</h3>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                            <li><a href="#">Return Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 FASCO. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-pinterest-p"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Quantity control functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const decreaseBtn = document.querySelector('.decrease-btn');
+            const increaseBtn = document.querySelector('.increase-btn');
+            const quantityInput = document.querySelector('.quantity-input');
+            const removeBtn = document.querySelector('.remove-btn');
+            const giftWrapCheckbox = document.getElementById('gift-wrap-option');
+            
+            // Update price based on quantity
+            function updatePrice() {
+                const quantity = parseInt(quantityInput.value);
+                const unitPrice = 14.90;
+                const totalElement = document.querySelector('[data-label="Total"]');
+                const subtotalElement = document.querySelector('.subtotal span:last-child');
+                
+                const itemTotal = (quantity * unitPrice).toFixed(2);
+                totalElement.textContent = `$${itemTotal}`;
+                
+                // Calculate subtotal (including gift wrap if selected)
+                let subtotal = quantity * unitPrice;
+                if (giftWrapCheckbox.checked) {
+                    subtotal += 10.00;
+                }
+                subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+            }
+            
+            // Decrease quantity
+            decreaseBtn.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                if (quantity > 1) {
+                    quantityInput.value = quantity - 1;
+                    updatePrice();
+                }
+            });
+            
+            // Increase quantity
+            increaseBtn.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                quantityInput.value = quantity + 1;
+                updatePrice();
+            });
+            
+            // Remove item
+            removeBtn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                row.remove();
+                
+                // Update subtotal when item is removed
+                document.querySelector('.subtotal span:last-child').textContent = '$0.00';
+            });
+            
+            // Gift wrap option
+            giftWrapCheckbox.addEventListener('change', function() {
+                updatePrice();
+            });
+        });
+    </script>
+</body>
+</html>
