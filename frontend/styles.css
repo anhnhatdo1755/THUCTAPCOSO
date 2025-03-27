@@ -1,0 +1,750 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-dark {
+    background-color: #000;
+    color: #fff;
+}
+
+.btn-dark:hover {
+    background-color: #333;
+}
+
+.btn-outline {
+    border: 2px solid #000;
+    color: #000;
+}
+
+.btn-outline:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+/* Header Styles */
+header {
+    padding: 20px 0;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    display: flex;
+}
+
+.nav-links li {
+    margin: 0 15px;
+}
+
+.nav-links a {
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover{
+    color: red;
+}
+
+.nav-links a.active {
+    color: #000;
+}
+
+/* Hero Section Styles */
+.hero {
+    padding: 50px 0;
+    background-color: #f9f9f9;
+    overflow: hidden; /* Add this to contain any overflow */
+}
+
+.hero-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hero-image {
+    flex: 0 0 25%;
+    height: 500px; /* Set fixed height */
+    overflow: hidden; /* Add this to contain the image */
+}
+
+.hero-image img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+    object-position: center; /* Center the image */
+}
+
+.hero-text {
+    flex: 0 0 40%;
+    text-align: center;
+}
+
+/* Add responsive adjustments for hero images */
+@media (max-width: 768px) {
+    .hero-image {
+        height: 400px;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+}
+
+.hero-text h2 {
+    font-size: 60px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 10px;
+}
+
+.hero-text .outline {
+    -webkit-text-stroke: 1px #000;
+    color: transparent;
+}
+
+.hero-text p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+/* Brands Section Styles */
+.brands {
+    padding: 30px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.brands-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #666;
+}
+
+/* Section Header Styles */
+.section-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 40px;
+}
+
+.section-header h2 {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.section-header p {
+    color: #666;
+}
+
+/* Deals Section Styles */
+.deals {
+    padding: 80px 0;
+}
+
+.deals-content {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.deals-text {
+    flex: 0 0 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.countdown {
+    margin-top: 30px;
+}
+
+.countdown h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.timer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.time-block {
+    text-align: center;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    width: 60px;
+}
+
+.time-block .number {
+    font-size: 24px;
+    font-weight: 700;
+    display: block;
+}
+
+.time-block .label {
+    font-size: 12px;
+    color: #666;
+}
+
+.deals-slider {
+    flex: 0 0 65%;
+    display: flex;
+    overflow: hidden;
+}
+
+.deals-slide {
+    flex: 0 0 33.333%;
+    padding: 0 10px;
+}
+
+.deals-slide img {
+    height: 400px;
+    object-fit: cover;
+    width: 100%;
+}
+
+/* Slider Controls Styles */
+.slider-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.dots {
+    display: flex;
+    margin-right: 20px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ddd;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dot.active {
+    background-color: #000;
+}
+
+.arrows {
+    display: flex;
+}
+
+.arrow {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+}
+
+.arrow:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+/* New Arrivals Section Styles */
+.new-arrivals {
+    padding: 80px 0;
+    background-color: #f9f9f9;
+}
+
+.category-filter {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.filter-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    color: #000;
+    font-weight: 600;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.product-card {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+    height: 300px;
+    overflow: hidden;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.product-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.product-category {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.product-rating {
+    color: #ffc107;
+    margin-bottom: 10px;
+}
+
+.product-price {
+    display: flex;
+    align-items: center;
+}
+
+.current-price {
+    font-size: 18px;
+    font-weight: 700;
+    margin-right: 10px;
+}
+
+.old-price {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.view-more {
+    text-align: center;
+}
+
+/* Features Section Styles */
+.features {
+    padding: 60px 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.features-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    flex: 0 0 23%;
+}
+
+.feature-icon {
+    font-size: 24px;
+    margin-right: 15px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.feature-text h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.feature-text p {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Instagram Section Styles */
+.instagram {
+    padding: 80px 0;
+}
+
+.instagram-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.instagram-item {
+    overflow: hidden;
+    position: relative;
+}
+
+.instagram-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.instagram-item:hover img {
+    transform: scale(1.1);
+}
+
+/* Testimonials Section Styles */
+.testimonials {
+    padding: 80px 0;
+    background-color: #f9f9f9;
+}
+
+.testimonials-slider {
+    max-width: 800px;
+    margin: 0 auto 30px;
+    overflow: hidden;
+}
+
+.testimonial {
+    padding: 0 20px;
+}
+
+.testimonial-content {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    display: flex;
+}
+
+.testimonial-image {
+    flex: 0 0 100px;
+    margin-right: 20px;
+}
+
+.testimonial-image img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.testimonial-text {
+    flex: 1;
+}
+
+.testimonial-text p {
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.testimonial-rating {
+    color: #ffc107;
+    margin-bottom: 10px;
+}
+
+.testimonial-name {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Footer Styles */
+footer {
+    padding: 60px 0 30px;
+    background-color: #fff;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.footer-links {
+    display: flex;
+    flex: 0 0 60%;
+    justify-content: space-between;
+}
+
+.footer-link-group h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.footer-link-group ul li {
+    margin-bottom: 10px;
+}
+
+.footer-link-group ul li a {
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.footer-link-group ul li a:hover {
+    color: #000;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 30px;
+    border-top: 1px solid #eee;
+}
+
+.social-links a {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background-color: #f5f5f5;
+    border-radius: 50%;
+    margin-left: 10px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+    .hero-text h2 {
+        font-size: 48px;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .instagram-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+    }
+    
+    .nav-links {
+        margin: 20px 0;
+    }
+    
+    .hero-content {
+        flex-direction: column;
+    }
+    
+    .hero-image {
+        flex: 0 0 100%;
+        margin-bottom: 30px;
+    }
+    
+    .hero-text {
+        flex: 0 0 100%;
+    }
+    
+    .brands-content {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .brand {
+        flex: 0 0 33.333%;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .deals-content {
+        flex-direction: column;
+    }
+    
+    .deals-text {
+        flex: 0 0 100%;
+        margin-bottom: 30px;
+    }
+    
+    .deals-slider {
+        flex: 0 0 100%;
+    }
+    
+    .features-content {
+        flex-wrap: wrap;
+    }
+    
+    .feature {
+        flex: 0 0 48%;
+        margin-bottom: 20px;
+    }
+    
+    .instagram-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .testimonial-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .testimonial-image {
+        margin: 0 auto 20px;
+    }
+    
+    .footer-top {
+        flex-direction: column;
+    }
+    
+    .logo {
+        margin-bottom: 30px;
+    }
+    
+    .footer-links {
+        flex-wrap: wrap;
+    }
+    
+    .footer-link-group {
+        flex: 0 0 48%;
+        margin-bottom: 30px;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+    }
+    
+    .footer-bottom p {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .nav-links {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .nav-links li {
+        margin: 10px 0;
+    }
+    
+    .hero-text h2 {
+        font-size: 36px;
+    }
+    
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .feature {
+        flex: 0 0 100%;
+    }
+    
+    .instagram-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .footer-link-group {
+        flex: 0 0 100%;
+    }
+}
