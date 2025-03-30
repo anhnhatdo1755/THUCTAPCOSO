@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASCO - Checkout</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="checkout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>FASCO</h1>
+                </div>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="homepage.html">Home</a></li>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                    </ul>
+                </nav>
+                <div class="icons-group">
+                    <a href="#" class="icon-link"><i class="fas fa-search"></i></a>
+                    <a href="#" class="icon-link"><i class="fas fa-user"></i></a>
+                    <a href="#" class="icon-link"><i class="far fa-heart"></i></a>
+                    <a href="cart.html" class="icon-link cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">1</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Checkout Title -->
+    <div class="checkout-title">
+        <div class="container">
+            <h1>FASCO Demo Checkout</h1>
+        </div>
+    </div>
+
+    <!-- Checkout Content -->
+    <section class="checkout">
+        <div class="container">
+            <div class="checkout-content">
+                <!-- Left Column - Forms -->
+                <div class="checkout-forms">
+                    <!-- Contact Section -->
+                    <div class="checkout-section">
+                        <h2>Contact</h2>
+                        <div class="form-group">
+                            <input type="email" placeholder="Email Address" class="form-input">
+                        </div>
+                    </div>
+
+                    <!-- Delivery Section -->
+                    <div class="checkout-section">
+                        <h2>Delivery</h2>
+                        <div class="form-group">
+                            <select class="form-select">
+                                <option value="" disabled selected>Country / Region</option>
+                                <option value="us">United States</option>
+                                <option value="ca">Canada</option>
+                                <option value="uk">United Kingdom</option>
+                                <option value="au">Australia</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <input type="text" placeholder="First Name" class="form-input">
+                            </div>
+                            <div class="form-group half">
+                                <input type="text" placeholder="Last Name" class="form-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="Address" class="form-input">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <input type="text" placeholder="City" class="form-input">
+                            </div>
+                            <div class="form-group half">
+                                <input type="text" placeholder="Postal Code" class="form-input">
+                            </div>
+                        </div>
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="save-address">
+                            <label for="save-address">Save this info for future</label>
+                        </div>
+                    </div>
+
+                    <!-- Payment Section -->
+                    <div class="checkout-section">
+                        <h2>Payment</h2>
+                        <div class="payment-method">
+                            <span>Credit Card</span>
+                            <div class="card-icons">
+                                <div class="card-icon mastercard"></div>
+                                <div class="card-icon visa"></div>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-with-icon">
+                                <input type="text" placeholder="Card Number" class="form-input">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <input type="text" placeholder="Expiration Date" class="form-input">
+                            </div>
+                            <div class="form-group half">
+                                <input type="text" placeholder="Security Code" class="form-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="Card Holder Name" class="form-input">
+                        </div>
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="save-payment">
+                            <label for="save-payment">Save this info for future</label>
+                        </div>
+                        <button class="btn btn-dark btn-full">Pay Now</button>
+                    </div>
+                </div>
+
+                <!-- Right Column - Order Summary -->
+                <div class="order-summary">
+                    <div class="summary-content">
+                        <div class="product-item">
+                            <div class="product-image">
+                                <img src="images/placeholder-dress.jpg" alt="Mini Dress With Ruffled Straps">
+                                <span class="product-count">1</span>
+                            </div>
+                            <div class="product-details">
+                                <h3>Mini Dress With Ruffled Straps</h3>
+                                <p>Red</p>
+                            </div>
+                            <div class="product-price">$100.00</div>
+                        </div>
+                        
+                        <div class="discount-code">
+                            <input type="text" placeholder="Discount code" class="form-input">
+                            <button class="btn btn-outline">Apply</button>
+                        </div>
+                        
+                        <div class="price-summary">
+                            <div class="price-row">
+                                <span>Subtotal</span>
+                                <span>$100.00</span>
+                            </div>
+                            <div class="price-row">
+                                <span>Shipping</span>
+                                <span>$40.00</span>
+                            </div>
+                            <div class="price-row total">
+                                <span>Total</span>
+                                <span>$140.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-top">
+                <div class="logo">
+                    <h2>FASCO</h2>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-link-group">
+                        <h3>Support Center</h3>
+                        <ul>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Shipping</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-link-group">
+                        <h3>About Us</h3>
+                        <ul>
+                            <li><a href="#">Our Story</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Careers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-link-group">
+                        <h3>Help</h3>
+                        <ul>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                            <li><a href="#">Return Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 FASCO. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/beaver000"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/shibaa_000/"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-pinterest-p"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="checkout.js"></script>
+</body>
+</html>

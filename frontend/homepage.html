@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+   
 </head>
 <body>
     <!-- Header Section -->
@@ -20,13 +21,12 @@
                     <ul class="nav-links">
                         <li><a href="homepage.html">Home</a></li>
                         <li><a href="shop.html">Shop</a></li>
-                        <li><a href="#">New Arrivals</a></li>
-                        <li><a href="sanpham.html">Packages</a></li>
+                        <li><a href="cart.html">Cart</a></li>
                         <li><a href="signin.html">Sign In</a></li>
                     </ul>
                 </nav>
                 <div class="sign-up">
-                    <a href="#" class="btn btn-dark">Sign Up</a>
+                    <a href="signup.html" class="btn btn-dark">Sign Up</a>
                 </div>
             </div>
         </div>
@@ -84,7 +84,7 @@
             </div>
             <div class="deals-content">
                 <div class="deals-text">
-                    <a href="#" class="btn btn-outline">SHOP NOW</a>
+                    <a href="shop.html" class="btn btn-outline">SHOP NOW</a>
                     <div class="countdown">
                         <h3>Hurry, Before It's Too Late!</h3>
                     </div>
@@ -101,17 +101,7 @@
                     </div>
                 </div>
             </div>
-            <div class="slider-controls">
-                <div class="dots">
-                    <span class="dot active"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
-                <div class="arrows">
-                    <button class="arrow prev"><i class="fas fa-chevron-left"></i></button>
-                    <button class="arrow next"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </div>
+            
         </div>
     </section>
 
@@ -131,7 +121,7 @@
             </div>
             <div class="products-grid">
                 <!-- Product 1 -->
-                <div class="product-card">
+                <div class="product-card" data-product-id="1">
                     <div class="product-image">
                         <img src="images/shinnydress.png" alt="Shiny Dress">
                     </div>
@@ -149,11 +139,15 @@
                             <span class="current-price">$39.50</span>
                             <span class="old-price">$49.50</span>
                         </div>
+                        <div class="product-buttons">
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-add-to-cart">Add to Cart</button>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Product 2 -->
-                <div class="product-card">
+                <div class="product-card" data-product-id="2">
                     <div class="product-image">
                         <img src="images/longdress.png" alt="Long Dress">
                     </div>
@@ -171,11 +165,15 @@
                             <span class="current-price">$129.50</span>
                             <span class="old-price">$159.50</span>
                         </div>
+                        <div class="product-buttons">
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-add-to-cart">Add to Cart</button>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Product 3 -->
-                <div class="product-card">
+                <div class="product-card" data-product-id="3">
                     <div class="product-image">
                         <img src="images/fullsweter.png" alt="Fluff Sweater">
                     </div>
@@ -193,11 +191,15 @@
                             <span class="current-price">$49.50</span>
                             <span class="old-price">$69.50</span>
                         </div>
+                        <div class="product-buttons">
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-add-to-cart">Add to Cart</button>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Product 4 -->
-                <div class="product-card">
+                <div class="product-card" data-product-id="4">
                     <div class="product-image">
                         <img src="images/whitedress.png" alt="White Dress">
                     </div>
@@ -215,11 +217,15 @@
                             <span class="current-price">$59.50</span>
                             <span class="old-price">$79.50</span>
                         </div>
+                        <div class="product-buttons">
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-add-to-cart">Add to Cart</button>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Product 5 -->
-                <div class="product-card">
+                <div class="product-card" data-product-id="5">
                     <div class="product-image">
                         <img src="images/colorfuldress.png" alt="Colorful Dress">
                     </div>
@@ -237,13 +243,18 @@
                             <span class="current-price">$119.50</span>
                             <span class="old-price">$149.50</span>
                         </div>
+                        <div class="product-buttons">
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-add-to-cart">Add to Cart</button>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Product 6 -->
-                <div class="product-card">
+                <div class="product-card" data-product-id="6">
                     <div class="product-image">
                         <img src="images/whiteshirt.png" alt="White Top">
+                     
                     </div>
                     <div class="product-info">
                         <h3 class="product-title">White Top</h3>
@@ -258,6 +269,10 @@
                         <div class="product-price">
                             <span class="current-price">$39.50</span>
                             <span class="old-price">$59.50</span>
+                        </div>
+                        <div class="product-buttons">
+                            <button class="btn-detail">Detail</button>
+                            <button class="btn-add-to-cart">Add to Cart</button>
                         </div>
                     </div>
                 </div>
@@ -390,17 +405,6 @@
                     </div>
                 </div>
             </div>
-            <div class="slider-controls">
-                <div class="dots">
-                    <span class="dot active"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
-                <div class="arrows">
-                    <button class="arrow prev"><i class="fas fa-chevron-left"></i></button>
-                    <button class="arrow next"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </div>
         </div>
     </section>
 
@@ -450,6 +454,11 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- Make sure we're loading just one JavaScript file -->
+    <div id="script-loaded" style="display:none;">Scripts loaded</div>
+    <script src="homepage.js"></script>
+    <script src="header-auth.js"></script>
+    <script src="update-script.js"></script>
 </body>
 </html>
+

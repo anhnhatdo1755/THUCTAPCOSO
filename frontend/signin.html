@@ -140,21 +140,21 @@
             <h1 class="brand-title">FASCO</h1>
             <h2 class="sign-in-title">Sign In To FASCO</h2>
             
-            <form>
+            <form id="loginForm">
                 <div class="input-field">
-                    <input type="email" placeholder="Email" required>
+                    <input type="email" id="email" placeholder="Email" required>
                 </div>
                 
                 <div class="input-field">
-                    <input type="password" placeholder="Password" required>
+                    <input type="password" id="password" placeholder="Password" required>
                 </div>
                 
                 <button type="submit" class="sign-in-button">Sign In</button>
                 
-                <a href="#" class="register-button">Register Now</a>
+                <a href="signup.html" class="register-button">Register Now</a>
                 
                 <div class="forgot-password">
-                    <a href="#">Forgot Password?</a>
+                    <a href="forgetpassword.html">Forgot Password?</a>
                 </div>
             </form>
             
@@ -163,5 +163,67 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("loginForm");
+            
+            // Check if user is already logged in
+            const currentUser = JSON.parse(localStorage.getItem("fascoUser"));
+            if (currentUser) {
+                // Redirect based on user role
+                if (currentUser.role === "admin") {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "homepage.html";
+                }
+            }
+            
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                
+                const email = document.getElementById("email").value;
+                const password = document.getElementById("password").value;
+                
+                // Admin authentication
+                if ((email === "admin" || email === "admin@fasco.com") && password === "123") {
+                    const adminUser = {
+                        name: "Admin",
+                        email: "admin@fasco.com",
+                        role: "admin",
+                        isLoggedIn: true
+                    };
+                    
+                    // Save user info to localStorage
+                    localStorage.setItem("fascoUser", JSON.stringify(adminUser));
+                    
+                    // Redirect to admin page
+                    window.location.href = "admin.html";
+                    return;
+                }
+                
+                // Regular user authentication
+                if (email === "anh@gmail.com" && password === "123") {
+                    const regularUser = {
+                        name: "Anh",
+                        email: "anh@gmail.com",
+                        role: "user",
+                        isLoggedIn: true
+                    };
+                    
+                    // Save user info to localStorage
+                    localStorage.setItem("fascoUser", JSON.stringify(regularUser));
+                    
+                    // Redirect to homepage
+                    window.location.href = "homepage.html";
+                    return;
+                }
+                
+                // Authentication failed
+                alert("Invalid email or password. Please try again.");
+            });
+        });
+    </script>
 </body>
 </html>
+

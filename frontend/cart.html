@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FASCO - Shopping Cart</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         /* Additional Cart Page Styles */
         .cart-container {
@@ -217,7 +219,10 @@
                 display: none;
             }
 
-            .cart-table, .cart-table tbody, .cart-table tr, .cart-table td {
+            .cart-table,
+            .cart-table tbody,
+            .cart-table tr,
+            .cart-table td {
                 display: block;
                 width: 100%;
             }
@@ -250,6 +255,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header Section -->
     <header>
@@ -262,15 +268,11 @@
                     <ul class="nav-links">
                         <li><a href="homepage.html">Home</a></li>
                         <li><a href="shop.html">Shop</a></li>
-                        <li><a href="#">Products</a></li>
-                        <li><a href="#">Pages</a></li>
-                        <li><a href="signin.html">Sign In</a></li>
+                        <li><a href="cart.html">Cart</a></li>
                     </ul>
                 </nav>
                 <div class="icons-group">
-                    <a href="#" class="icon-link"><i class="fas fa-search"></i></a>
                     <a href="#" class="icon-link"><i class="fas fa-user"></i></a>
-                    <a href="#" class="icon-link"><i class="far fa-heart"></i></a>
                     <a href="cart.html" class="icon-link cart-icon">
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-count">1</span>
@@ -283,12 +285,6 @@
     <!-- Cart Section -->
     <section class="cart-container">
         <h1 class="cart-title">Shopping Cart</h1>
-        
-        <div class="breadcrumb">
-            <a href="homepage.html">Home</a>
-            <span>›</span>
-            <span>Your Shopping Cart</span>
-        </div>
 
         <table class="cart-table">
             <thead>
@@ -341,7 +337,7 @@
                 <span>$100.00</span>
             </div>
             <button class="checkout-btn">Checkout</button>
-            <button class="view-cart-btn">View Cart</button>
+ 
         </div>
     </section>
 
@@ -392,62 +388,54 @@
     </footer>
 
     <script>
-        // Quantity control functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const decreaseBtn = document.querySelector('.decrease-btn');
-            const increaseBtn = document.querySelector('.increase-btn');
+        document.addEventListener('DOMContentLoaded', function () {
             const quantityInput = document.querySelector('.quantity-input');
             const removeBtn = document.querySelector('.remove-btn');
             const giftWrapCheckbox = document.getElementById('gift-wrap-option');
-            
-            // Update price based on quantity
+            const cartTableBody = document.querySelector('.cart-table tbody');
+            const subtotalElement = document.querySelector('.subtotal span:last-child');
+            const cartContainer = document.querySelector('.cart-container');
+            const unitPrice = 14.90;
+
             function updatePrice() {
-                const quantity = parseInt(quantityInput.value);
-                const unitPrice = 14.90;
-                const totalElement = document.querySelector('[data-label="Total"]');
-                const subtotalElement = document.querySelector('.subtotal span:last-child');
-                
-                const itemTotal = (quantity * unitPrice).toFixed(2);
-                totalElement.textContent = `$${itemTotal}`;
-                
-                // Calculate subtotal (including gift wrap if selected)
+                let quantity = parseInt(quantityInput.value) || 1;
+                let itemTotal = (quantity * unitPrice).toFixed(2);
+                document.querySelector('[data-label="Total"]').textContent = `$${itemTotal}`;
                 let subtotal = quantity * unitPrice;
                 if (giftWrapCheckbox.checked) {
                     subtotal += 10.00;
                 }
                 subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
             }
-            
-            // Decrease quantity
-            decreaseBtn.addEventListener('click', function() {
-                let quantity = parseInt(quantityInput.value);
-                if (quantity > 1) {
-                    quantityInput.value = quantity - 1;
-                    updatePrice();
+
+            // Cho phép nhập số lượng trực tiếp
+            quantityInput.addEventListener('input', function () {
+                if (this.value < 1 || isNaN(this.value)) {
+                    this.value = 1;
                 }
-            });
-            
-            // Increase quantity
-            increaseBtn.addEventListener('click', function() {
-                let quantity = parseInt(quantityInput.value);
-                quantityInput.value = quantity + 1;
                 updatePrice();
             });
-            
-            // Remove item
-            removeBtn.addEventListener('click', function() {
-                const row = this.closest('tr');
-                row.remove();
-                
-                // Update subtotal when item is removed
-                document.querySelector('.subtotal span:last-child').textContent = '$0.00';
+            // chuyên
+            document.querySelector('.checkout-btn').addEventListener('click', function () {
+                window.location.href = 'checkout.html';
             });
-            
-            // Gift wrap option
-            giftWrapCheckbox.addEventListener('change', function() {
-                updatePrice();
+
+            // Xóa sản phẩm
+            removeBtn.addEventListener('click', function () {
+                cartTableBody.innerHTML = '';
+                subtotalElement.textContent = '$0.00';
+
+                // Hiển thị thông báo khi giỏ hàng trống
+                cartContainer.innerHTML = '<h2 class="empty-cart">Your cart is empty. <a href="shop.html">Start shopping now!</a></h2>';
             });
+
+            // Cập nhật giá khi chọn gói quà
+            giftWrapCheckbox.addEventListener('change', updatePrice);
         });
     </script>
+    <script src="cart.js"></script>
+    <script src="header-auth.js"></script>
+    <script src="update-script.js"></script>
 </body>
+
 </html>

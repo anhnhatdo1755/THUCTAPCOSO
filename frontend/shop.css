@@ -283,7 +283,73 @@
     background-color: #000;
     color: #fff;
 }
-
+/* Cart confirmation message styles */
+.cart-confirmation {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #000;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 4px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  .cart-confirmation-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+  }
+  
+  .cart-confirmation p {
+    margin: 0;
+  }
+  
+  .view-cart {
+    color: #fff;
+    text-decoration: underline;
+    font-weight: 500;
+  }
+  
+  .view-cart:hover {
+    color: #ccc;
+  }
+  
+  /* Update cart icon styles */
+  .cart-icon {
+    position: relative;
+  }
+  
+  .cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #000;
+    color: #fff;
+    font-size: 10px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  
 /* Responsive Adjustments */
 @media (max-width: 1024px) {
     .shop-content {
