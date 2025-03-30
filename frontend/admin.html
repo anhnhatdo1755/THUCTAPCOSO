@@ -1410,6 +1410,25 @@
                 });
             });
         });
+        // Add this script to your admin.html file
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Find the logout link in the sidebar
+    const logoutLink = document.querySelector('.sidebar-menu a:has(i.fas.fa-sign-out-alt)') || 
+                       document.querySelector('.sidebar-menu li:last-child a');
+    
+    if (logoutLink) {
+        logoutLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove user from localStorage
+            localStorage.removeItem("fascoUser");
+            
+            // Redirect to homepage
+            window.location.href = "homepage.html";
+        });
+    }
+});
         
     </script>
 

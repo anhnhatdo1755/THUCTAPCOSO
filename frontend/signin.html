@@ -165,64 +165,81 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.getElementById("loginForm");
+        document.addEventListener("DOMContentLoaded", function() {
+    const loginForm = document.getElementById("loginForm");
+    
+    if (loginForm) {
+        loginForm.addEventListener("submit", function(e) {
+            e.preventDefault();
             
-            // Check if user is already logged in
-            const currentUser = JSON.parse(localStorage.getItem("fascoUser"));
-            if (currentUser) {
-                // Redirect based on user role
-                if (currentUser.role === "admin") {
-                    window.location.href = "admin.html";
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            
+            // Admin authentication
+            if ((email === "admin" || email === "admin@fasco.com") && password === "123") {
+                const adminUser = {
+                    name: "Admin",
+                    email: "admin@fasco.com",
+                    role: "admin",
+                    isLoggedIn: true
+                };
+                
+                // Save user info to localStorage
+                localStorage.setItem("fascoUser", JSON.stringify(adminUser));
+                
+                // Check if there's a redirect URL
+                const redirectUrl = localStorage.getItem("redirectAfterLogin");
+                if (redirectUrl) {
+                    localStorage.removeItem("redirectAfterLogin");
+                    
+                    // Don't redirect back to signin page
+                    if (redirectUrl.includes("signin.html")) {
+                        window.location.href = "admin.html";
+                    } else {
+                        window.location.href = redirectUrl;
+                    }
                 } else {
-                    window.location.href = "homepage.html";
+                    // Default redirect to admin page
+                    window.location.href = "admin.html";
                 }
+                return;
             }
             
-            form.addEventListener("submit", (e) => {
-                e.preventDefault();
+            // Regular user authentication
+            if (email === "anh@gmail.com" && password === "123") {
+                const regularUser = {
+                    name: "Anh",
+                    email: "anh@gmail.com",
+                    role: "user",
+                    isLoggedIn: true
+                };
                 
-                const email = document.getElementById("email").value;
-                const password = document.getElementById("password").value;
+                // Save user info to localStorage
+                localStorage.setItem("fascoUser", JSON.stringify(regularUser));
                 
-                // Admin authentication
-                if ((email === "admin" || email === "admin@fasco.com") && password === "123") {
-                    const adminUser = {
-                        name: "Admin",
-                        email: "admin@fasco.com",
-                        role: "admin",
-                        isLoggedIn: true
-                    };
+                // Check if there's a redirect URL
+                const redirectUrl = localStorage.getItem("redirectAfterLogin");
+                if (redirectUrl) {
+                    localStorage.removeItem("redirectAfterLogin");
                     
-                    // Save user info to localStorage
-                    localStorage.setItem("fascoUser", JSON.stringify(adminUser));
-                    
-                    // Redirect to admin page
-                    window.location.href = "admin.html";
-                    return;
-                }
-                
-                // Regular user authentication
-                if (email === "anh@gmail.com" && password === "123") {
-                    const regularUser = {
-                        name: "Anh",
-                        email: "anh@gmail.com",
-                        role: "user",
-                        isLoggedIn: true
-                    };
-                    
-                    // Save user info to localStorage
-                    localStorage.setItem("fascoUser", JSON.stringify(regularUser));
-                    
-                    // Redirect to homepage
+                    // Don't redirect back to signin page
+                    if (redirectUrl.includes("signin.html")) {
+                        window.location.href = "homepage.html";
+                    } else {
+                        window.location.href = redirectUrl;
+                    }
+                } else {
+                    // Default redirect to homepage
                     window.location.href = "homepage.html";
-                    return;
                 }
-                
-                // Authentication failed
-                alert("Invalid email or password. Please try again.");
-            });
+                return;
+            }
+            
+            // Authentication failed
+            alert("Invalid email or password. Please try again.");
         });
+    }
+});
     </script>
 </body>
 </html>
