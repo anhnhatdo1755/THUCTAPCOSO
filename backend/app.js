@@ -86,10 +86,12 @@ function buildQuery(base, req, allowedFilters = [], allowedSorts = []) {
 
 // AUTH: Register
 app.post('/api/auth/register', async (req, res) => {
-  const { name, email, passWord } = req.body;
+  const { name, email, passWord, phone } = req.body;
+  console.log('Register request:', { name, email, phone }); // Debug log
   
   // Kiểm tra các trường bắt buộc
   if (!name || !email || !passWord) {
+    console.log('Missing fields'); // Debug log
     return res.status(400).json({ message: 'Missing fields' });
   }
 
@@ -97,18 +99,31 @@ app.post('/api/auth/register', async (req, res) => {
     // Kiểm tra email đã tồn tại chưa
     const checkEmail = await sql.query`SELECT * FROM Users WHERE email = ${email}`;
     if (checkEmail.recordset.length > 0) {
+      console.log('Email already exists'); // Debug log
       return res.status(400).json({ message: 'Email already exists' });
     }
 
     // Mã hóa mật khẩu
     const hash = await bcrypt.hash(passWord, 10);
 
-    // Thêm user mới
-    await sql.query`INSERT INTO Users (name, email, passWord, role, status) 
-                   VALUES (${name}, ${email}, ${hash}, 'customer', 'active')`;
+    // Thêm user mới và lấy id
+    const userResult = await sql.query`
+      INSERT INTO Users (name, email, passWord, phone, role, status)
+      OUTPUT INSERTED.id
+      VALUES (${name}, ${email}, ${hash}, ${phone}, 'customer', 'active')
+    `;
+    const userId = userResult.recordset[0].id;
+
+    // Tạo giỏ hàng cho user mới
+    await sql.query`
+      INSERT INTO Cart (totalPrice, Usersid)
+      VALUES (0, ${userId})
+    `;
+    console.log('User and cart inserted successfully'); // Debug log
     
     res.json({ message: 'Register success' });
   } catch (err) {
+    console.error('Register error:', err); // Debug log
     res.status(500).json({ message: 'Register failed', error: err.message });
   }
 });
@@ -126,6 +141,17 @@ app.post('/api/auth/login', async (req, res) => {
     res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   } catch (err) {
     res.status(500).json({ message: 'Login failed', error: err.message });
+  }
+});
+
+// AUTH: Logout
+app.post('/api/auth/logout', verifyToken, async (req, res) => {
+  try {
+    // Trong trường hợp này, chúng ta chỉ cần trả về thành công
+    // vì việc xóa token được thực hiện ở phía client
+    res.json({ message: 'Logout successful' });
+  } catch (err) {
+    res.status(500).json({ message: 'Logout failed', error: err.message });
   }
 });
 
@@ -227,11 +253,13 @@ app.get('/api/cart', verifyToken, async (req, res) => {
     const cart = await sql.query`SELECT * FROM Cart WHERE Usersid = ${req.user.id}`;
     if (!cart.recordset[0]) return res.json({ products: [] });
     const cartId = cart.recordset[0].id;
-    const products = await sql.query`SELECT cp.id, p.*, cp.quantity 
-                                   FROM cartProduct cp 
-                                   JOIN Products p ON cp.Productsid = p.id 
-                                   WHERE cp.Cartid = ${cartId} AND p.status = 'active'`;
-    res.json({ cartId, products: products.recordset });
+    const products = await sql.query`
+      SELECT cp.id as cartProductId, p.*, cp.quantity 
+      FROM cartProduct cp 
+      JOIN Products p ON cp.Productsid = p.id 
+      WHERE cp.Cartid = ${cartId} AND p.status = 'active'`;
+    const productsWithId = products.recordset.map(item => ({ ...item, id: item.cartProductId }));
+    res.json({ cartId, products: productsWithId });
   } catch (err) {
     res.status(500).json({ message: 'Get cart failed', error: err.message });
   }
@@ -246,7 +274,7 @@ app.post('/api/cart', verifyToken, async (req, res) => {
     let cart = await sql.query`SELECT * FROM Cart WHERE Usersid = ${req.user.id}`;
     let cartId;
     if (!cart.recordset[0]) {
-      const result = await sql.query`INSERT INTO Cart (totalPrice, wrap, Usersid) OUTPUT INSERTED.id VALUES (0, 0, ${req.user.id})`;
+      const result = await sql.query`INSERT INTO Cart (totalPrice, Usersid) OUTPUT INSERTED.id VALUES (0, ${req.user.id})`;
       cartId = result.recordset[0].id;
     } else {
       cartId = cart.recordset[0].id;
@@ -273,9 +301,37 @@ app.delete('/api/cart/:cartProductId', verifyToken, async (req, res) => {
   }
 });
 
+// CART: Update quantity of product in cart
+app.put('/api/cart/:cartProductId', verifyToken, async (req, res) => {
+  const cartProductId = req.params.cartProductId;
+  const { quantity } = req.body; // quantity: số lượng muốn tăng/giảm (có thể là +1 hoặc -1)
+  try {
+    // Lấy cartProduct
+    const cartProduct = await sql.query`SELECT * FROM cartProduct WHERE id = ${cartProductId}`;
+    if (!cartProduct.recordset[0]) return res.status(404).json({ message: 'Cart product not found' });
+    // Kiểm tra quyền sở hữu cart
+    const cart = await sql.query`SELECT * FROM Cart WHERE id = ${cartProduct.recordset[0].Cartid}`;
+    if (!cart.recordset[0] || cart.recordset[0].Usersid !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+    // Lấy số lượng tồn kho của sản phẩm
+    const product = await sql.query`SELECT stock FROM Products WHERE id = ${cartProduct.recordset[0].Productsid}`;
+    if (!product.recordset[0]) return res.status(404).json({ message: 'Product not found' });
+    const stock = product.recordset[0].stock;
+    // Tính số lượng mới
+    let newQuantity = cartProduct.recordset[0].quantity + Number(quantity);
+    if (newQuantity < 1) newQuantity = 1;
+    if (newQuantity > stock) return res.status(400).json({ message: 'Số lượng vượt quá tồn kho!' });
+    await sql.query`UPDATE cartProduct SET quantity = ${newQuantity} WHERE id = ${cartProductId}`;
+    res.json({ message: 'Quantity updated', newQuantity });
+  } catch (err) {
+    res.status(500).json({ message: 'Update quantity failed', error: err.message });
+  }
+});
+
 // CHECKOUT: Create checkout (cho cả admin và customer)
 app.post('/api/checkout', verifyToken, async (req, res) => {
-  const { shippingFee, paymentMethod, address } = req.body;
+  const { shippingFee, paymentMethod, address, name, phone, email, city } = req.body;
   
   try {
     // 1. Kiểm tra giỏ hàng của user
@@ -337,7 +393,11 @@ app.post('/api/checkout', verifyToken, async (req, res) => {
           address, 
           date, 
           Usersid,
-          Cartid
+          Cartid,
+          name,
+          phone,
+          email,
+          city
         ) 
         OUTPUT INSERTED.id 
         VALUES (
@@ -348,7 +408,11 @@ app.post('/api/checkout', verifyToken, async (req, res) => {
           ${address}, 
           GETDATE(), 
           ${req.user.id},
-          ${cartId}
+          ${cartId},
+          ${name},
+          ${phone},
+          ${email},
+          ${city}
         )
       `;
 

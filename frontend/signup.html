@@ -142,14 +142,8 @@
             <h2 class="sign-in-title">Create Account</h2>
             
             <form>
-                <div class="input-row">
-                    <div class="input-field">
-                        <input type="text" placeholder="First Name" required>
-                    </div>
-                    
-                    <div class="input-field">
-                        <input type="text" placeholder="Last Name" required>
-                    </div>
+                <div class="input-field">
+                    <input type="text" placeholder="Name" required>
                 </div>
                 
                 <div class="input-field">
@@ -181,21 +175,6 @@
         </div>
     </div>
 
-    <script>
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const password = document.querySelectorAll('input[type="password"]')[0].value;
-            const confirmPassword = document.querySelectorAll('input[type="password"]')[1].value;
-            
-            if (password !== confirmPassword) {
-                alert('Passwords do not match!');
-                return;
-            }
-            
-            // Here you would typically send the form data to your server
-            alert('Account created successfully!');
-            window.location.href = 'signin.html';
-        });
-    </script>
+    <script src="signup.js"></script>
 </body>
 </html>

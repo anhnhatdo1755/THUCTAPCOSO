@@ -1,4 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const API_URL = 'http://localhost:3000/api';
+  let token = localStorage.getItem('token');
+  let user = JSON.parse(localStorage.getItem('user'));
+
+  // Check if user is logged in
+  if (!token || !user) {
+    window.location.href = 'signin.html';
+    return;
+  }
+
+  // Check if user is admin
+  if (user.role === 'admin') {
+    window.location.href = 'admin.html';
+    return;
+  }
+
   // Load product data from localStorage if available
   const selectedProduct = JSON.parse(localStorage.getItem("selectedProduct"))
   if (selectedProduct) {
@@ -137,15 +153,26 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Function to update cart count
-  function updateCartCount() {
-    const cart = JSON.parse(localStorage.getItem("fascoCart")) || []
-    const cartCount = document.querySelector(".cart-count")
-    if (cartCount) {
-      const totalItems = cart.reduce((total, item) => total + item.quantity, 0)
-      cartCount.textContent = totalItems
-      console.log("Cart count updated to:", totalItems)
-    } else {
-      console.log("Cart count element not found")
+  async function updateCartCount() {
+    try {
+      const response = await fetch(`${API_URL}/cart`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to get cart');
+      const data = await response.json();
+      const cart = data.products || [];
+      const cartCount = document.querySelector(".cart-count")
+      if (cartCount) {
+        const totalItems = cart.reduce((total, item) => total + item.quantity, 0)
+        cartCount.textContent = totalItems
+        console.log("Cart count updated to:", totalItems)
+      } else {
+        console.log("Cart count element not found")
+      }
+    } catch (error) {
+      console.error('Error updating cart count:', error)
     }
   }
 
@@ -233,81 +260,33 @@ document.addEventListener("DOMContentLoaded", () => {
   // Add to cart button
   const addToCartBtn = document.querySelector(".btn-add-to-cart")
 
-  addToCartBtn.addEventListener("click", () => {
-    const productTitle = document.querySelector(".product-title").textContent
-    const quantity = Number.parseInt(quantityInput.value)
-    const price = Number.parseFloat(document.querySelector(".current-price").textContent.replace("$", ""))
-    const productImage = document.querySelector(".product-main-image img").src
+  addToCartBtn.addEventListener("click", async () => {
+    try {
+      const productId = selectedProduct.id
+      const quantity = Number.parseInt(quantityInput.value)
 
-    // Get selected size
-    let selectedSize = "M" // Default
-    sizeOptions.forEach((option) => {
-      if (option.classList.contains("active")) {
-        selectedSize = option.textContent
-      }
-    })
+      const response = await fetch(`${API_URL}/cart`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          Productsid: productId,
+          quantity: quantity
+        })
+      });
 
-    // Get selected color
-    let selectedColor = "Blue" // Default
-    colorOptions.forEach((option) => {
-      if (option.classList.contains("active")) {
-        if (option.classList.contains("blue")) {
-          selectedColor = "Blue"
-        } else if (option.classList.contains("black")) {
-          selectedColor = "Black"
-        } else if (option.classList.contains("pink")) {
-          selectedColor = "Pink"
-        }
-      }
-    })
+      if (!response.ok) throw new Error('Failed to add to cart');
 
-    // Create cart item object
-    const cartItem = {
-      name: productTitle,
-      price: price,
-      quantity: quantity,
-      color: selectedColor,
-      size: selectedSize,
-      image: productImage,
-    }
+      // Update cart count
+      updateCartCount()
 
-    // Get existing cart or create new one
-    const cart = JSON.parse(localStorage.getItem("fascoCart")) || []
-
-    // Check if product already exists in cart (same product, size and color)
-    const existingItemIndex = cart.findIndex(
-      (item) => item.name === cartItem.name && item.size === cartItem.size && item.color === cartItem.color,
-    )
-
-    if (existingItemIndex !== -1) {
-      // Update quantity if item already exists
-      cart[existingItemIndex].quantity += quantity
-    } else {
-      // Add new item to cart
-      cart.push(cartItem)
-    }
-
-    // Save cart to localStorage
-    localStorage.setItem("fascoCart", JSON.stringify(cart))
-    console.log("Cart saved to localStorage:", cart)
-
-    // Update cart count
-    updateCartCount()
-
-    // Show custom confirmation message instead of alert
-    showCartConfirmation(`Added to cart: ${quantity} x ${productTitle} (${selectedColor}, Size ${selectedSize})`)
-
-    // Add a view cart button to the notification
-    const viewCartBtn = document.createElement("a")
-    viewCartBtn.href = "cart.html"
-    viewCartBtn.textContent = "View Cart"
-    viewCartBtn.style.color = "#fff"
-    viewCartBtn.style.textDecoration = "underline"
-    viewCartBtn.style.marginLeft = "10px"
-
-    const notification = document.querySelector(".cart-confirmation-content")
-    if (notification) {
-      notification.appendChild(viewCartBtn)
+      // Show confirmation message
+      showCartConfirmation(`${selectedProduct.name} added to cart!`)
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+      alert('Failed to add item to cart. Please try again.')
     }
   })
 

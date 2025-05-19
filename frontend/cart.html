@@ -149,16 +149,6 @@
             outline: none;
         }
 
-        .gift-wrap {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-        }
-
-        .gift-wrap input {
-            margin-right: 10px;
-        }
-
         .cart-summary {
             margin-top: 30px;
             display: flex;
@@ -326,18 +316,12 @@
             </tbody>
         </table>
 
-        <div class="gift-wrap">
-            <input type="checkbox" id="gift-wrap-option">
-            <label for="gift-wrap-option">For $10.00 Please Wrap The Product</label>
-        </div>
-
         <div class="cart-summary">
             <div class="subtotal">
                 <span>Subtotal</span>
                 <span>$100.00</span>
             </div>
             <button class="checkout-btn">Checkout</button>
- 
         </div>
     </section>
 
@@ -391,7 +375,6 @@
         document.addEventListener('DOMContentLoaded', function () {
             const quantityInput = document.querySelector('.quantity-input');
             const removeBtn = document.querySelector('.remove-btn');
-            const giftWrapCheckbox = document.getElementById('gift-wrap-option');
             const cartTableBody = document.querySelector('.cart-table tbody');
             const subtotalElement = document.querySelector('.subtotal span:last-child');
             const cartContainer = document.querySelector('.cart-container');
@@ -402,9 +385,6 @@
                 let itemTotal = (quantity * unitPrice).toFixed(2);
                 document.querySelector('[data-label="Total"]').textContent = `$${itemTotal}`;
                 let subtotal = quantity * unitPrice;
-                if (giftWrapCheckbox.checked) {
-                    subtotal += 10.00;
-                }
                 subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
             }
 
@@ -428,9 +408,6 @@
                 // Hiển thị thông báo khi giỏ hàng trống
                 cartContainer.innerHTML = '<h2 class="empty-cart">Your cart is empty. <a href="shop.html">Start shopping now!</a></h2>';
             });
-
-            // Cập nhật giá khi chọn gói quà
-            giftWrapCheckbox.addEventListener('change', updatePrice);
         });
     </script>
     <script src="cart.js"></script>
