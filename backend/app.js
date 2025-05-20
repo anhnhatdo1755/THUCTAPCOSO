@@ -5,6 +5,14 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const cors = require('cors');
+const path = require('path');
+
+// Import routes
+const authRoutes = require('./routes/authRoutes');
+const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -12,7 +20,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Multer setup for image upload
 const storage = multer.diskStorage({
@@ -83,6 +91,12 @@ function buildQuery(base, req, allowedFilters = [], allowedSorts = []) {
   params.push({ name: 'limit', type: sql.Int, value: limit });
   return { query, params };
 }
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
 
 // AUTH: Register
 app.post('/api/auth/register', async (req, res) => {
@@ -170,15 +184,13 @@ app.get('/api/users', verifyToken, isAdmin, async (req, res) => {
 
 // PRODUCTS: List products (public, with pagination/filter/search/sort)
 app.get('/api/products', async (req, res) => {
-  const { query, params } = buildQuery('SELECT * FROM Products', req, 
-    ['name', 'brand', 'color', 'size', 'collection'], 
-    ['id', 'name', 'price', 'brand', 'stock']);
   try {
+    // Bỏ lọc status nếu không có sản phẩm active
     const request = new sql.Request();
-    params.forEach(p => request.input(p.name, p.type, p.value));
-    const result = await request.query(query);
+    const result = await request.query('SELECT * FROM Products');
     res.json(result.recordset);
   } catch (err) {
+    console.error('Get products failed:', err);
     res.status(500).json({ message: 'Get products failed', error: err.message });
   }
 });
@@ -332,20 +344,17 @@ app.put('/api/cart/:cartProductId', verifyToken, async (req, res) => {
 // CHECKOUT: Create checkout (cho cả admin và customer)
 app.post('/api/checkout', verifyToken, async (req, res) => {
   const { shippingFee, paymentMethod, address, name, phone, email, city } = req.body;
-  
+  const userId = req.user.userId || req.user.id; // Đảm bảo lấy đúng userId
   try {
     // 1. Kiểm tra giỏ hàng của user
     const cart = await sql.query`
       SELECT * FROM Cart 
-      WHERE Usersid = ${req.user.id}
+      WHERE Usersid = ${userId}
     `;
-    
     if (!cart.recordset[0]) {
       return res.status(400).json({ message: 'No cart found' });
     }
-
     const cartId = cart.recordset[0].id;
-
     // 2. Lấy sản phẩm trong giỏ hàng
     const cartProducts = await sql.query`
       SELECT cp.*, p.price, p.stock, p.status
@@ -353,11 +362,9 @@ app.post('/api/checkout', verifyToken, async (req, res) => {
       JOIN Products p ON cp.Productsid = p.id
       WHERE cp.Cartid = ${cartId}
     `;
-
     if (!cartProducts.recordset.length) {
       return res.status(400).json({ message: 'Cart is empty' });
     }
-
     // 3. Kiểm tra tồn kho và tính tổng tiền
     let totalPrice = 0;
     for (const item of cartProducts.recordset) {
@@ -407,7 +414,7 @@ app.post('/api/checkout', verifyToken, async (req, res) => {
           ${paymentMethod}, 
           ${address}, 
           GETDATE(), 
-          ${req.user.id},
+          ${userId},
           ${cartId},
           ${name},
           ${phone},
@@ -655,5 +662,13 @@ app.put('/api/checkout/:id/cancel', verifyToken, async (req, res) => {
   }
 });
 
+// Error handling
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Lỗi server', error: err.message });
+});
+
 // Start server
-app.listen(PORT, () => console.log('Server running on port', PORT));
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

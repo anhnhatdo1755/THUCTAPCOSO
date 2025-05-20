@@ -213,7 +213,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const subtotalElement = document.querySelector('.price-row:first-child span:last-child');
             let totalPrice = 0;
             if (subtotalElement) {
-                totalPrice = Number(subtotalElement.textContent.replace(/[^\d]/g, ''));
+                // Đảm bảo lấy đúng kiểu số, không phải string
+                totalPrice = Number(subtotalElement.textContent.replace(/[^\d.]/g, ''));
             }
             // Gửi order
             try {
@@ -230,8 +231,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         email,
                         address,
                         city: citySelect.value,
-                        shippingFee,
-                        totalPrice
+                        shippingFee: Number(shippingFee),
+                        totalPrice: Number(totalPrice)
                     })
                 });
                 if (!response.ok) throw new Error('Failed to create order');
