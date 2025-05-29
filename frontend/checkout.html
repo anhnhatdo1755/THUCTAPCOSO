@@ -24,15 +24,7 @@
                         <li><a href="cart.html">Cart</a></li>
                     </ul>
                 </nav>
-                <div class="icons-group">
-                    <a href="#" class="icon-link"><i class="fas fa-search"></i></a>
-                    <a href="#" class="icon-link"><i class="fas fa-user"></i></a>
-                    <a href="#" class="icon-link"><i class="far fa-heart"></i></a>
-                    <a href="cart.html" class="icon-link cart-icon">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="cart-count">1</span>
-                    </a>
-                </div>
+                <div class="sign-up"></div>
             </div>
         </div>
     </header>
@@ -40,7 +32,7 @@
     <!-- Checkout Title -->
     <div class="checkout-title">
         <div class="container">
-            <h1>FASCO Demo Checkout</h1>
+            <h1>FASCO Checkout</h1>
         </div>
     </div>
 
@@ -148,27 +140,7 @@
                     <div class="checkout-section">
                         <h2>Payment</h2>
                         <div class="form-group">
-                            <label><input type="radio" name="payment-method" value="card" checked> Thẻ tín dụng</label>
-                            <label><input type="radio" name="payment-method" value="cod"> Thanh toán khi nhận hàng (COD)</label>
-                        </div>
-                        <div class="payment-card-fields">
-                            <div class="form-group">
-                                <div class="input-with-icon">
-                                    <input type="text" placeholder="Card Number" class="form-input">
-                                    <i class="fas fa-lock"></i>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group half">
-                                    <input type="text" placeholder="Expiration Date" class="form-input">
-                                </div>
-                                <div class="form-group half">
-                                    <input type="text" placeholder="Security Code" class="form-input">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" placeholder="Card Holder Name" class="form-input">
-                            </div>
+                            <label><input type="radio" name="payment-method" value="cod" checked> Thanh toán khi nhận hàng (COD)</label>
                         </div>
                         <button class="btn btn-dark btn-full">Đặt hàng</button>
                     </div>
@@ -258,6 +230,6 @@
     <script src="checkout.js"></script>
     <script src="auth-check.js"></script>
     <script src="signinredirect.js"></script>
-    
+    <script src="header-auth.js"></script>
 </body>
 </html>

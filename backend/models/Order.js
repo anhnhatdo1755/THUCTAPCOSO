@@ -68,16 +68,22 @@ class Order {
         }
     }
 
-    static async findAll() {
+    static async findAll(offset = 0, limit = 10, status = null) {
         try {
             const pool = await sql.connect(config);
-            const result = await pool.request()
-                .query(`
-                    SELECT c.*, u.name as userName, u.email
+            let query = `SELECT c.*, u.name as userName, u.email
                     FROM checkOut c
-                    JOIN Users u ON c.Usersid = u.id
-                    ORDER BY c.date DESC
-                `);
+                    JOIN Users u ON c.Usersid = u.id`;
+            if (status && status !== 'all') {
+                query += ` WHERE LOWER(c.status) = LOWER(@status)`;
+            }
+            query += ` ORDER BY c.date DESC
+                    OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY`;
+            const request = pool.request()
+                .input('offset', sql.Int, offset)
+                .input('limit', sql.Int, limit);
+            if (status && status !== 'all') request.input('status', sql.VarChar, status);
+            const result = await request.query(query);
             return result.recordset;
         } catch (err) {
             throw err;
@@ -108,15 +114,40 @@ class Order {
             const result = await pool.request()
                 .input('id', sql.Int, id)
                 .query(`
-                    SELECT c.*, u.name as userName, u.email,
-                           pco.*, p.name as productName, p.image
+                    SELECT c.*, u.name as userName, u.email, u.phone,
+                           pco.id as productCheckOutId, pco.quantity, pco.checkOutPrice, pco.Productsid,
+                           p.name as productName, p.image
                     FROM checkOut c
                     JOIN Users u ON c.Usersid = u.id
                     JOIN productsCheckOut pco ON c.id = pco.checkOutid
                     JOIN Products p ON pco.Productsid = p.id
                     WHERE c.id = @id
                 `);
-            return result.recordset;
+            const rows = result.recordset;
+            if (!rows.length) return null;
+            // Lấy thông tin đơn hàng từ dòng đầu tiên
+            const order = {
+                id: rows[0].id,
+                date: rows[0].date,
+                status: rows[0].status,
+                totalPrice: rows[0].totalPrice,
+                shippingFee: rows[0].shippingFee,
+                paymentMethod: rows[0].paymentMethod,
+                address: rows[0].address,
+                city: rows[0].city,
+                name: rows[0].name,
+                email: rows[0].email,
+                phone: rows[0].phone,
+                products: rows.map(r => ({
+                    id: r.productCheckOutId,
+                    productId: r.Productsid,
+                    productName: r.productName,
+                    image: r.image,
+                    quantity: r.quantity,
+                    checkOutPrice: r.checkOutPrice
+                }))
+            };
+            return order;
         } catch (err) {
             throw err;
         }
@@ -130,6 +161,16 @@ class Order {
                 .input('status', sql.VarChar, status)
                 .query('UPDATE checkOut SET status = @status WHERE id = @id');
             return result.rowsAffected[0];
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    static async countAll() {
+        try {
+            const pool = await sql.connect(config);
+            const result = await pool.request().query('SELECT COUNT(*) as total FROM checkOut');
+            return result.recordset[0].total;
         } catch (err) {
             throw err;
         }

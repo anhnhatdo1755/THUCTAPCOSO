@@ -33,7 +33,135 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update main product image if it matches the expected format
     const mainImage = document.querySelector(".product-main-image img")
     if (mainImage && selectedProduct.image) {
-      mainImage.src = selectedProduct.image
+      mainImage.src = getProductImageUrl(selectedProduct.image)
+    }
+
+    // Lấy sản phẩm liên quan
+    let currentPage = 1;
+    const limit = 3;
+    function renderRelated(page = 1) {
+      fetch(`${API_URL}/products/related/${selectedProduct.id}?page=${page}&limit=${limit}`)
+        .then(res => res.json())
+        .then(data => {
+          const { products, total } = data;
+          const container = document.querySelector('.related-products-container');
+          container.innerHTML = '';
+          products.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+              <div class="product-image">
+                <img src="${getProductImageUrl(product.image)}" alt="${product.name}">
+              </div>
+              <div class="product-info">
+                <h3 class="product-title">${product.name}</h3>
+                <div class="product-price">
+                  <span class="current-price">$${product.price}</span>
+                </div>
+              </div>
+            `;
+            // Thêm nút chi tiết và add to cart
+            const buttonsContainer = document.createElement('div');
+            buttonsContainer.className = 'product-buttons';
+            const detailBtn = document.createElement('button');
+            detailBtn.className = 'btn-detail';
+            detailBtn.textContent = 'Detail';
+            detailBtn.onclick = () => showProductDetails(product);
+            const addToCartBtn = document.createElement('button');
+            addToCartBtn.className = 'btn-add-to-cart';
+            addToCartBtn.textContent = 'Add to Cart';
+            addToCartBtn.onclick = () => addToCart(product);
+            buttonsContainer.appendChild(detailBtn);
+            buttonsContainer.appendChild(addToCartBtn);
+            card.querySelector('.product-info').appendChild(buttonsContainer);
+            container.appendChild(card);
+          });
+          // Trước khi thêm pagination mới, xóa pagination cũ nếu có
+          const oldPagination = container.parentElement.querySelector('.related-pagination');
+          if (oldPagination) oldPagination.remove();
+          // Phân trang kiểu slider dots và nút tròn
+          const pagination = document.createElement('div');
+          pagination.className = 'related-pagination';
+          pagination.style.display = 'flex';
+          pagination.style.justifyContent = 'center';
+          pagination.style.alignItems = 'center';
+          pagination.style.gap = '20px';
+          pagination.style.marginTop = '32px';
+          pagination.style.width = '100%';
+          pagination.style.textAlign = 'center';
+          const totalPages = Math.ceil(total / limit);
+          // Nút tròn prev
+          const prevBtn = document.createElement('button');
+          prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+          prevBtn.className = 'circle-arrow';
+          prevBtn.disabled = page === 1;
+          prevBtn.onclick = () => { if (page > 1) { currentPage--; renderRelated(currentPage); } };
+          // Dots
+          const dots = document.createElement('div');
+          dots.style.display = 'flex';
+          dots.style.gap = '8px';
+          for (let i = 1; i <= totalPages; i++) {
+            const dot = document.createElement('span');
+            dot.className = 'slider-dot' + (i === page ? ' active' : '');
+            dot.onclick = () => { currentPage = i; renderRelated(currentPage); };
+            dots.appendChild(dot);
+          }
+          // Nút tròn next
+          const nextBtn = document.createElement('button');
+          nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+          nextBtn.className = 'circle-arrow';
+          nextBtn.disabled = page === totalPages || totalPages === 0;
+          nextBtn.onclick = () => { if (page < totalPages) { currentPage++; renderRelated(currentPage); } };
+          pagination.appendChild(prevBtn);
+          pagination.appendChild(dots);
+          pagination.appendChild(nextBtn);
+          container.parentElement.appendChild(pagination);
+        });
+    }
+    renderRelated(currentPage);
+
+    // Khi load trang, cập nhật stock tổng
+    const stockSpan = document.querySelector('.product-stock span strong');
+    if (stockSpan && selectedProduct.stock !== undefined) {
+      stockSpan.textContent = selectedProduct.stock + ' item(s)';
+    }
+
+    // Khi load trang, tự động chọn size đúng với size của sản phẩm và cập nhật label
+    const sizeOptions = document.querySelectorAll(".size-option");
+    if (selectedProduct.size) {
+      sizeOptions.forEach(option => {
+        option.classList.remove("active");
+        if (option.textContent.trim().toLowerCase() === selectedProduct.size.toLowerCase()) {
+          option.classList.add("active");
+          // Cập nhật label
+          const sizeLabel = document.querySelector('.option-group label');
+          if (sizeLabel) sizeLabel.textContent = `Size: ${selectedProduct.size}`;
+        }
+      });
+    }
+
+    // Khi load trang, chỉ hiển thị nút màu đúng với selectedProduct.color
+    const colorOptions = document.querySelectorAll(".color-option");
+    if (selectedProduct.color) {
+      colorOptions.forEach(option => {
+        if (!option.classList.contains(selectedProduct.color.toLowerCase())) {
+          option.style.display = 'none';
+        } else {
+          option.style.display = '';
+        }
+      });
+    }
+
+    // Nếu chỉ có 1 nút màu được hiển thị, ẩn luôn label 'Color: ...'
+    const colorLabel = document.querySelectorAll('.option-group label')[1];
+    if (selectedProduct.color && colorLabel) {
+      let visibleColorCount = 0;
+      colorOptions.forEach(option => {
+        if (option.style.display !== 'none') visibleColorCount++;
+      });
+      if (visibleColorCount === 1) {
+        colorLabel.style.display = 'none';
+      }
     }
   }
 
@@ -112,6 +240,44 @@ document.addEventListener("DOMContentLoaded", () => {
       
       .btn-add-to-cart:hover {
         background-color: #333;
+      }
+
+      .circle-arrow {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid #eee;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background 0.2s, border 0.2s;
+        outline: none;
+      }
+      .circle-arrow:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .slider-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #ddd;
+        display: inline-block;
+        margin: 0 3px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .slider-dot.active {
+        background: #111;
+      }
+
+      .related-products-container > div:last-child {
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
       }
     `
   document.head.appendChild(style)
@@ -193,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Update main image
       const thumbnailImg = this.querySelector("img")
-      mainImage.src = thumbnailImg.src
+      mainImage.src = getProductImageUrl(thumbnailImg.src)
     })
   })
 
@@ -202,11 +368,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   sizeOptions.forEach((option) => {
     option.addEventListener("click", function () {
-      // Remove active class from all size options
-      sizeOptions.forEach((o) => o.classList.remove("active"))
-
-      // Add active class to clicked option
-      this.classList.add("active")
+      sizeOptions.forEach(o => o.classList.remove("active"));
+      this.classList.add("active");
+      // Cập nhật label
+      const sizeLabel = document.querySelector('.option-group label');
+      if (sizeLabel) sizeLabel.textContent = `Size: ${this.textContent.trim()}`;
+      updateStockDisplay(selectedProduct.stock);
     })
   })
 
@@ -215,25 +382,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   colorOptions.forEach((option) => {
     option.addEventListener("click", function () {
-      // Remove active class from all color options
-      colorOptions.forEach((o) => o.classList.remove("active"))
-
-      // Add active class to clicked option
-      this.classList.add("active")
-
-      // Update color label
-      const colorLabel = document.querySelector(".option-group label:nth-of-type(2)")
-      let colorName = ""
-
-      if (this.classList.contains("blue")) {
-        colorName = "Blue"
-      } else if (this.classList.contains("black")) {
-        colorName = "Black"
-      } else if (this.classList.contains("pink")) {
-        colorName = "Pink"
-      }
-
-      colorLabel.textContent = `Color: ${colorName}`
+      colorOptions.forEach(o => o.classList.remove("active"));
+      this.classList.add("active");
+      // Cập nhật label
+      const colorLabel = document.querySelectorAll('.option-group label')[1];
+      let colorName = "";
+      if (this.classList.contains("blue")) colorName = "Blue";
+      else if (this.classList.contains("black")) colorName = "Black";
+      else if (this.classList.contains("pink")) colorName = "Pink";
+      if (colorLabel) colorLabel.textContent = `Color: ${colorName}`;
+      updateStockDisplay(selectedProduct.stock);
     })
   })
 
@@ -242,25 +400,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const plusBtn = document.querySelector(".quantity-btn.plus")
   const quantityInput = document.querySelector(".quantity-input")
 
-  minusBtn.addEventListener("click", () => {
-    const currentValue = Number.parseInt(quantityInput.value)
-    if (currentValue > 1) {
-      quantityInput.value = currentValue - 1
-    }
-  })
+  if (minusBtn && plusBtn && quantityInput) {
+    minusBtn.addEventListener("click", () => {
+      const currentValue = Number.parseInt(quantityInput.value)
+      if (currentValue > 1) {
+        quantityInput.value = currentValue - 1
+      }
+    })
 
-  plusBtn.addEventListener("click", () => {
-    const currentValue = Number.parseInt(quantityInput.value)
-    const maxStock = 9 // Based on the "Only 9 items left in stock"
-    if (currentValue < maxStock) {
-      quantityInput.value = currentValue + 1
-    }
-  })
+    plusBtn.addEventListener("click", () => {
+      const currentValue = Number.parseInt(quantityInput.value)
+      const maxStock = 9 // Based on the "Only 9 items left in stock"
+      if (currentValue < maxStock) {
+        quantityInput.value = currentValue + 1
+      }
+    })
+  }
 
   // Add to cart button
   const addToCartBtn = document.querySelector(".btn-add-to-cart")
 
   addToCartBtn.addEventListener("click", async () => {
+    let token = localStorage.getItem('token');
+    if (!token) {
+        alert('Bạn cần đăng nhập để thêm vào giỏ hàng!');
+        window.location.href = 'signin.html';
+        return;
+    }
     try {
       const productId = selectedProduct.id
       const quantity = Number.parseInt(quantityInput.value)
@@ -391,7 +557,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Product image
     const productImage = document.createElement("img")
-    productImage.src = product.image
+    productImage.src = getProductImageUrl(product.image)
     productImage.alt = product.name
     productImage.style.width = "200px"
     productImage.style.height = "auto"
@@ -512,14 +678,17 @@ document.addEventListener("DOMContentLoaded", () => {
       // Increase quantity if product already in cart
       cart[existingItemIndex].quantity += 1
     } else {
-      // Add new product to cart with quantity 1
+      // Add new product to cart với đầy đủ trường
       cart.push({
-        id: product.id || Date.now().toString(), // Use timestamp as ID if none provided
+        id: product.id || Date.now().toString(),
         name: product.name,
         price: product.price,
         image: product.image,
-        color: product.color || "Default",
-        size: product.size || "M",
+        color: product.color || 'Không xác định',
+        size: product.size || 'Không xác định',
+        brand: product.brand || 'Không xác định',
+        collection: product.collection,
+        description: product.description,
         quantity: 1
       })
     }
@@ -545,57 +714,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Add buttons to "People Also Loved" product cards
-  const relatedProducts = document.querySelectorAll(".related-products .product-card")
-  
-  relatedProducts.forEach((card, index) => {
-    // Extract product information
-    const productName = card.querySelector(".product-title").textContent
-    const productCategory = card.querySelector(".product-category").textContent
-    const productPrice = parseFloat(card.querySelector(".current-price").textContent.replace("$", ""))
-    const productOldPrice = parseFloat(card.querySelector(".old-price").textContent.replace("$", ""))
-    const productImage = card.querySelector(".product-image img").src
-    const productRating = card.querySelector(".product-rating").innerHTML
-    
-    // Create product object
-    const product = {
-      id: `related-${index + 1}`,
-      name: productName,
-      category: productCategory,
-      price: productPrice,
-      oldPrice: productOldPrice,
-      image: productImage,
-      rating: productRating
+  function getProductImageUrl(image) {
+    if (!image) return 'images/placeholder-dress.jpg';
+    return image; // Backend đã trả về URL đầy đủ
+  }
+
+  // Sau khi chọn size hoặc màu, cập nhật lại số lượng còn trong kho
+  function updateStockDisplay(stock) {
+    const stockSpan = document.querySelector('.product-stock span strong');
+    if (stockSpan) {
+      stockSpan.textContent = stock + ' item(s)';
     }
-    
-    // Create buttons container
-    const buttonsContainer = document.createElement("div")
-    buttonsContainer.className = "product-buttons"
-    
-    // Create Detail button
-    const detailBtn = document.createElement("button")
-    detailBtn.className = "btn-detail"
-    detailBtn.textContent = "Detail"
-    
-    // Create Add to Cart button
-    const addToCartBtn = document.createElement("button")
-    addToCartBtn.className = "btn-add-to-cart"
-    addToCartBtn.textContent = "Add to Cart"
-    
-    // Add buttons to container
-    buttonsContainer.appendChild(detailBtn)
-    buttonsContainer.appendChild(addToCartBtn)
-    
-    // Add container to product card
-    card.querySelector(".product-info").appendChild(buttonsContainer)
-    
-    // Add event listeners
-    detailBtn.addEventListener("click", () => {
-      showProductDetails(product)
-    })
-    
-    addToCartBtn.addEventListener("click", () => {
-      addToCart(product)
-    })
-  })
+  }
+
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
 })

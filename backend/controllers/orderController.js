@@ -22,8 +22,13 @@ class OrderController {
 
     static async getAllOrders(req, res) {
         try {
-            const orders = await Order.findAll();
-            res.json(orders);
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const offset = (page - 1) * limit;
+            const status = req.query.status || null;
+            const orders = await Order.findAll(offset, limit, status);
+            const total = await Order.countAll();
+            res.json({ orders, total });
         } catch (err) {
             res.status(500).json({ message: 'Lỗi server', error: err.message });
         }

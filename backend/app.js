@@ -15,12 +15,13 @@ const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const API_URL = process.env.API_URL || 'http://localhost:3000';
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static('uploads'));
 
 // Multer setup for image upload
 const storage = multer.diskStorage({
@@ -90,6 +91,28 @@ function buildQuery(base, req, allowedFilters = [], allowedSorts = []) {
   params.push({ name: 'offset', type: sql.Int, value: offset });
   params.push({ name: 'limit', type: sql.Int, value: limit });
   return { query, params };
+}
+
+// Helper function to get full image URL
+function getFullImageUrl(imagePath) {
+  if (!imagePath) return null;
+  if (imagePath.startsWith('http')) return imagePath;
+  return `${API_URL}/${imagePath}`;
+}
+
+// Helper function to process product data
+function processProductData(product) {
+  if (!product) return null;
+  return {
+    ...product,
+    image: getFullImageUrl(product.image)
+  };
+}
+
+// Helper function to process products array
+function processProductsData(products) {
+  if (!Array.isArray(products)) return [];
+  return products.map(processProductData);
 }
 
 // Routes
@@ -171,11 +194,29 @@ app.post('/api/auth/logout', verifyToken, async (req, res) => {
 
 // USERS: List users (admin only, with pagination/filter/search/sort)
 app.get('/api/users', verifyToken, isAdmin, async (req, res) => {
-  const { query, params } = buildQuery('SELECT * FROM Users', req, ['name', 'email', 'role'], ['name', 'email', 'role']);
+  let base = 'SELECT * FROM Users';
+  let where = [];
+  let params = [];
+  if (req.query.role && req.query.role !== 'all') {
+    where.push('LOWER(role) = LOWER(@role)');
+    params.push({ name: 'role', type: sql.VarChar, value: req.query.role });
+  }
+  if (req.query.status && req.query.status !== 'all') {
+    where.push('LOWER(status) = LOWER(@status)');
+    params.push({ name: 'status', type: sql.VarChar, value: req.query.status });
+  }
+  if (where.length) base += ' WHERE ' + where.join(' AND ');
+  base += ' ORDER BY id ASC';
+  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(req.query.page) || 1;
+  const offset = (page - 1) * limit;
+  base += ' OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY';
+  params.push({ name: 'offset', type: sql.Int, value: offset });
+  params.push({ name: 'limit', type: sql.Int, value: limit });
   try {
     const request = new sql.Request();
     params.forEach(p => request.input(p.name, p.type, p.value));
-    const result = await request.query(query);
+    const result = await request.query(base);
     res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ message: 'Get users failed', error: err.message });
@@ -185,10 +226,22 @@ app.get('/api/users', verifyToken, isAdmin, async (req, res) => {
 // PRODUCTS: List products (public, with pagination/filter/search/sort)
 app.get('/api/products', async (req, res) => {
   try {
-    // Bỏ lọc status nếu không có sản phẩm active
     const request = new sql.Request();
-    const result = await request.query('SELECT * FROM Products');
-    res.json(result.recordset);
+    let query = 'SELECT * FROM Products WHERE 1=1';
+    if (req.query.status && req.query.status !== 'all') {
+      query += ` AND LOWER(status) = LOWER('${req.query.status}')`;
+    } else if (!req.query.status) {
+      query += ` AND LOWER(status) = 'active'`;
+    }
+    if (req.query.category) {
+      const ids = req.query.category.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
+      if (ids.length > 0) {
+        query += ` AND Categoryid IN (${ids.join(',')})`;
+      }
+    }
+    query += ' ORDER BY id ASC';
+    const result = await request.query(query);
+    res.json(processProductsData(result.recordset));
   } catch (err) {
     console.error('Get products failed:', err);
     res.status(500).json({ message: 'Get products failed', error: err.message });
@@ -198,9 +251,12 @@ app.get('/api/products', async (req, res) => {
 // PRODUCTS: Get product detail (public)
 app.get('/api/products/:id', async (req, res) => {
   try {
-    const result = await sql.query`SELECT * FROM Products WHERE id = ${req.params.id} AND status = 'active'`;
-    if (!result.recordset[0]) return res.status(404).json({ message: 'Product not found' });
-    res.json(result.recordset[0]);
+    const request = new sql.Request();
+    const result = await request.query`SELECT * FROM Products WHERE id = ${req.params.id} AND LOWER(status) = 'active'`;
+    if (result.recordset.length === 0) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.json(processProductData(result.recordset[0]));
   } catch (err) {
     res.status(500).json({ message: 'Get product failed', error: err.message });
   }
@@ -281,7 +337,7 @@ app.get('/api/cart', verifyToken, async (req, res) => {
 app.post('/api/cart', verifyToken, async (req, res) => {
   const { Productsid, quantity } = req.body;
   try {
-    const prod = await sql.query`SELECT * FROM Products WHERE id = ${Productsid} AND status = 'active'`;
+    const prod = await sql.query`SELECT * FROM Products WHERE id = ${Productsid} AND LOWER(status) = 'active'`;
     if (!prod.recordset[0]) return res.status(404).json({ message: 'Product not found or inactive' });
     let cart = await sql.query`SELECT * FROM Cart WHERE Usersid = ${req.user.id}`;
     let cartId;
@@ -374,14 +430,12 @@ app.post('/api/checkout', verifyToken, async (req, res) => {
           message: `Product ${item.Productsid} is no longer available` 
         });
       }
-
       // Kiểm tra số lượng tồn kho
       if (item.stock < item.quantity) {
         return res.status(400).json({ 
           message: `Insufficient stock for product ${item.Productsid}. Available: ${item.stock}` 
         });
       }
-
       totalPrice += item.price * item.quantity;
     }
 
@@ -516,27 +570,35 @@ app.put('/api/checkout/:id', verifyToken, isAdmin, async (req, res) => {
 
 // USERS: Add user (admin only)
 app.post('/api/users', verifyToken, isAdmin, async (req, res) => {
-  const { name, email, passWord, role } = req.body;
-  
+  const { name, email, passWord, role, phone, status } = req.body;
   // Kiểm tra các trường bắt buộc
-  if (!name || !email || !passWord || !role) {
+  if (!name || !email || !passWord || !role || !phone) {
     return res.status(400).json({ message: 'Missing fields' });
   }
-
   try {
     // Kiểm tra email đã tồn tại chưa
     const checkEmail = await sql.query`SELECT * FROM Users WHERE email = ${email}`;
     if (checkEmail.recordset.length > 0) {
       return res.status(400).json({ message: 'Email already exists' });
     }
-
     // Mã hóa mật khẩu
     const hash = await bcrypt.hash(passWord, 10);
+    // Thêm user mới và lấy id
+    const userResult = await sql.query`
+      INSERT INTO Users (name, email, passWord, phone, role, status)
+      OUTPUT INSERTED.id
+      VALUES (${name}, ${email}, ${hash}, ${phone}, ${role}, ${status || 'active'})
+    `;
+    const userId = userResult.recordset[0].id;
 
-    // Thêm user mới
-    await sql.query`INSERT INTO Users (name, email, passWord, role, status) 
-                   VALUES (${name}, ${email}, ${hash}, ${role}, 'active')`;
-    
+    // Tạo giỏ hàng cho user nếu là customer
+    if (role.toLowerCase() === 'customer') {
+      await sql.query`
+        INSERT INTO Cart (totalPrice, Usersid)
+        VALUES (0, ${userId})
+      `;
+    }
+
     res.json({ message: 'User created successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Create user failed', error: err.message });
@@ -545,7 +607,7 @@ app.post('/api/users', verifyToken, isAdmin, async (req, res) => {
 
 // USERS: Update user (admin only)
 app.put('/api/users/:id', verifyToken, isAdmin, async (req, res) => {
-  const { name, email, passWord, role, status } = req.body;
+  const { name, email, passWord, role, status, phone } = req.body;
   const id = req.params.id;
   try {
     let setStr = [];
@@ -554,6 +616,7 @@ app.put('/api/users/:id', verifyToken, isAdmin, async (req, res) => {
     if (email) { setStr.push('email=@email'); request.input('email', sql.VarChar, email); }
     if (role) { setStr.push('role=@role'); request.input('role', sql.VarChar, role); }
     if (status) { setStr.push('status=@status'); request.input('status', sql.VarChar, status); }
+    if (phone) { setStr.push('phone=@phone'); request.input('phone', sql.VarChar, phone); }
     if (passWord) {
       const hash = await bcrypt.hash(passWord, 10);
       setStr.push('passWord=@passWord');
@@ -671,4 +734,105 @@ app.use((err, req, res, next) => {
 // Start server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+});
+
+app.get('/api/dashboard/summary', async (req, res) => {
+  try {
+    const [orders, users, products, revenue] = await Promise.all([
+      sql.query`SELECT COUNT(*) as totalOrders FROM checkOut`,
+      sql.query`SELECT COUNT(*) as totalUsers FROM Users`,
+      sql.query`SELECT COUNT(*) as totalProducts FROM Products`,
+      sql.query`SELECT SUM(totalPrice + shippingFee) as totalRevenue FROM checkOut WHERE status = 'completed'`
+    ]);
+    res.json({
+      totalOrders: orders.recordset[0].totalOrders,
+      totalUsers: users.recordset[0].totalUsers,
+      totalProducts: products.recordset[0].totalProducts,
+      totalRevenue: revenue.recordset[0].totalRevenue || 0
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Dashboard summary failed', error: err.message });
+  }
+});
+
+app.get('/api/dashboard/recent-orders', async (req, res) => {
+  try {
+    const result = await sql.query`
+      SELECT TOP 5 
+        c.id,
+        c.name,
+        c.date,
+        c.totalPrice,
+        c.shippingFee,
+        c.paymentMethod,
+        c.status
+      FROM checkOut c
+      ORDER BY c.date DESC
+    `;
+    res.json(result.recordset);
+  } catch (err) {
+    res.status(500).json({ message: 'Get recent orders failed', error: err.message });
+  }
+});
+
+app.get('/api/products/related/:id', async (req, res) => {
+  const id = req.params.id;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 3;
+  const offset = (page - 1) * limit;
+  try {
+    // Lấy brand và category của sản phẩm hiện tại
+    const result = await sql.query`SELECT brand, Categoryid FROM Products WHERE id = ${id}`;
+    if (!result.recordset[0]) return res.status(404).json({ message: 'Product not found' });
+    const { brand, Categoryid } = result.recordset[0];
+    // Lấy tổng số sản phẩm liên quan
+    const totalResult = await sql.query`
+      SELECT COUNT(*) as total FROM Products 
+      WHERE id <> ${id} AND brand = ${brand} AND Categoryid = ${Categoryid} AND status = 'active'
+    `;
+    const total = totalResult.recordset[0].total;
+    // Lấy các sản phẩm cùng brand và category, loại trừ chính nó, phân trang
+    const related = await sql.query`
+      SELECT * FROM Products 
+      WHERE id <> ${id} AND brand = ${brand} AND Categoryid = ${Categoryid} AND status = 'active'
+      ORDER BY id DESC
+      OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
+    `;
+    res.json({ products: related.recordset, total });
+  } catch (err) {
+    res.status(500).json({ message: 'Get related products failed', error: err.message });
+  }
+});
+
+app.get('/api/products/collection', async (req, res) => {
+  const collection = req.query.collection;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 6;
+  const offset = (page - 1) * limit;
+  try {
+    // Lấy tổng số sản phẩm
+    const totalResult = await sql.query`
+      SELECT COUNT(*) as total FROM Products WHERE collection IS NOT NULL AND LOWER(collection) = LOWER(${collection}) AND status = 'active'
+    `;
+    const total = totalResult.recordset[0].total;
+    // Lấy sản phẩm theo collection, phân trang
+    const products = await sql.query`
+      SELECT * FROM Products WHERE collection IS NOT NULL AND LOWER(collection) = LOWER(${collection}) AND status = 'active'
+      ORDER BY id DESC
+      OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
+    `;
+    res.json({ products: products.recordset, total });
+  } catch (err) {
+    console.error('Get collection products failed:', err);
+    res.json({ products: [], total: 0 });
+  }
+});
+
+app.get('/api/categories', async (req, res) => {
+  try {
+    const result = await sql.query('SELECT * FROM Category');
+    res.json(result.recordset);
+  } catch (err) {
+    res.status(500).json({ message: 'Get categories failed', error: err.message });
+  }
 });

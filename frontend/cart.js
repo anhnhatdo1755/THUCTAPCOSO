@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let user = JSON.parse(localStorage.getItem('user'));
 
   // Check if user is logged in
-  if (!token || !user) {
+  if (!token) {
     window.location.href = 'signin.html';
     return;
   }
@@ -46,6 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return "$" + Number.parseFloat(price).toFixed(2);
   }
 
+  function getProductImageUrl(image) {
+    if (!image) return 'images/placeholder-dress.jpg';
+    image = image.replace(/\\/g, '/').replace(/\\/g, '/');
+    if (image.startsWith('http')) return image;
+    if (image.startsWith('uploads/')) return 'http://localhost:3000/' + image;
+    return 'http://localhost:3000/uploads/' + image;
+  }
+
   // Render cart items
   async function renderCart() {
     const cart = await getCart();
@@ -85,11 +93,10 @@ document.addEventListener("DOMContentLoaded", () => {
           <td data-label="Product">
             <div class="product-info">
               <div class="product-image">
-                <img src="${item.image}" alt="${item.name}">
+                <img src="${getProductImageUrl(item.image)}" alt="${item.name}">
               </div>
               <div class="product-details">
                 <h3>${item.name}</h3>
-                <p class="product-color">Color: ${item.color}</p>
                 <button class="remove-btn" data-id="${cartProductId}">Remove</button>
               </div>
             </div>

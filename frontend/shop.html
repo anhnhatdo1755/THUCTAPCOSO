@@ -62,37 +62,55 @@
                             <button class="color-btn" style="background-color: blue;"></button>
                             <button class="color-btn" style="background-color: purple;"></button>
                             <button class="color-btn" style="background-color: pink;"></button>
+                            <button class="color-btn" style="background-color: black;"></button>
+                            <button class="color-btn" style="background-color: white; border: 1px solid #ccc;"></button>
+                            <button class="color-btn" style="background-color: gray;"></button>
+                            <button class="color-btn" style="background-color: brown;"></button>
+                            <button class="color-btn" style="background-color: beige;"></button>
+                            <button class="color-btn" style="background-color: navy;"></button>
+                            <button class="color-btn" style="background-color: teal;"></button>
+                            <button class="color-btn" style="background-color: maroon;"></button>
+                            <button class="color-btn" style="background-color: gold;"></button>
+                            <button class="color-btn" style="background-color: silver;"></button>
+                            <button class="color-btn" style="background-color: #FF69B4;"></button> <!-- Hot Pink -->
+                            <button class="color-btn" style="background-color: #00CED1;"></button> <!-- Dark Turquoise -->
+                            <button class="color-btn" style="background-color: #FFD700;"></button> <!-- Gold -->
                         </div>
                     </div>
                     
                     <div class="filter-group">
                         <h4>Prices</h4>
                         <div class="price-range">
-                            <input type="range" min="0" max="500" step="50">
-                            <div class="price-labels">
-                                <span>$0</span>
-                                <span>$500</span>
-                            </div>
+                            <input type="number" class="min-price-input" placeholder="Min" min="0" style="width:60px;"> -
+                            <input type="number" class="max-price-input" placeholder="Max" min="0" style="width:60px;">
                         </div>
                     </div>
                     
                     <div class="filter-group">
                         <h4>Brands</h4>
                         <div class="brand-options">
-                            <label><input type="checkbox"> Valentino</label>
-                            <label><input type="checkbox"> Gucci</label>
-                            <label><input type="checkbox"> Prada</label>
-                            <label><input type="checkbox"> Chanel</label>
+                            <label><input type="checkbox" value="nike"> Nike</label>
+                            <label><input type="checkbox" value="adidas"> Adidas</label>
+                            <label><input type="checkbox" value="puma"> Puma</label>
+                            <label><input type="checkbox" value="uniqlo"> Uniqlo</label>
+                            <label><input type="checkbox" value="levis"> Levis</label>
                         </div>
                     </div>
                     
                     <div class="filter-group">
                         <h4>Collections</h4>
                         <div class="collection-options">
-                            <label><input type="checkbox"> All Products</label>
-                            <label><input type="checkbox"> New Arrivals</label>
-                            <label><input type="checkbox"> Best Sellers</label>
-                            <label><input type="checkbox"> Sale</label>
+                            <label><input type="checkbox" value="Spring"> Spring</label>
+                            <label><input type="checkbox" value="Summer"> Summer</label>
+                            <label><input type="checkbox" value="Autumn"> Autumn</label>
+                            <label><input type="checkbox" value="Winter"> Winter</label>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4>Category</h4>
+                        <div class="category-options">
+                            <!-- Category checkboxes sẽ được render tự động ở đây -->
                         </div>
                     </div>
                 </div>
@@ -103,10 +121,8 @@
                         <h2>Fashion</h2>
                         <div class="sort-options1">
                             <select>
-                                <option>Best Selling</option>
                                 <option>Price: Low to High</option>
                                 <option>Price: High to Low</option>
-                                <option>Newest Arrivals</option>
                             </select>
                             <div class="view-options1">
                                 <button class="view-btn grid-view active"><i class="fas fa-th"></i></button>
@@ -378,7 +394,5 @@
 
     <script src="shop.js"></script>
     <script src="header-auth.js"></script>
-    <script src="update-script.js"></script>
-    <script src="auto-direct.js"></script>
 </body>
 </html>

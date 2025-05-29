@@ -1,21 +1,39 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Get cart from localStorage or initialize empty array
-  function getCart() {
-    return JSON.parse(localStorage.getItem("fascoCart")) || [];
-  }
+  console.log('homepage.js loaded');
+  const API_URL = 'http://localhost:3000/api';
 
-  // Save cart to localStorage
-  function saveCart(cart) {
-    localStorage.setItem("fascoCart", JSON.stringify(cart));
-    updateCartCount();
+  // Get cart from API
+  async function getCart() {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No token found, user not logged in');
+        return [];
+      }
+      const response = await fetch(`${API_URL}/cart`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) throw new Error('Failed to get cart');
+      const data = await response.json();
+      return data.products || [];
+    } catch (error) {
+      console.error('Error getting cart:', error);
+      return [];
+    }
   }
 
   // Update cart count in header
-  function updateCartCount() {
-    const cart = getCart();
-    const cartCount = document.querySelector(".cart-count");
-    if (cartCount) {
-      cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+  async function updateCartCount() {
+    try {
+      const cart = await getCart();
+      const cartCount = document.querySelector(".cart-count");
+      if (cartCount) {
+        cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+      }
+    } catch (error) {
+      console.error('Error updating cart count:', error);
     }
   }
 
@@ -216,83 +234,228 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Add to cart functionality for the button in the overlay
     addToCartBtn.addEventListener("click", () => {
-      addToCart(product);
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        color: product.color,
+        size: product.size,
+        brand: product.brand,
+        collection: product.collection,
+        description: product.description
+      });
       overlay.remove();
     });
   }
 
   // Function to add product to cart
-  function addToCart(product) {
-    const cart = getCart();
-    
-    // Check if product already exists in cart
-    const existingItemIndex = cart.findIndex(item => item.id === product.id);
-    
-    if (existingItemIndex !== -1) {
-      // Increase quantity if product already in cart
-      cart[existingItemIndex].quantity += 1;
-    } else {
-      // Add new product to cart with quantity 1
-      cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        color: product.color || "Default",
-        quantity: 1
+  async function addToCart(product) {
+    try {
+      console.log('=== addToCart Debug ===');
+      console.log('Product:', product);
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/cart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          Productsid: product.id,
+          quantity: 1
+        })
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to add to cart');
+      }
+
+      // Update cart count after successful add
+      await updateCartCount();
+      
+      // Show confirmation message
+      showCartConfirmation(`Added to cart: ${product.name}`);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert(error.message || 'Failed to add to cart. Please try again.');
     }
-    
-    // Save updated cart
-    saveCart(cart);
-    
-    // Show confirmation message
-    showCartConfirmation(`Added to cart: ${product.name}`);
   }
 
   // Function to redirect to product detail page
   function goToProductDetail(product) {
     // Save selected product to localStorage
     localStorage.setItem("selectedProduct", JSON.stringify(product));
-    
     // Redirect to product detail page
     window.location.href = "sanpham.html";
   }
 
-  // Get all product cards in the New Arrivals section
-  const productCards = document.querySelectorAll(".new-arrivals .product-card");
-  
-  // Add event listeners to each product card
-  productCards.forEach(card => {
-    const productId = card.getAttribute("data-product-id");
-    const productName = card.querySelector(".product-title").textContent;
-    const productCategory = card.querySelector(".product-category").textContent;
-    const productPrice = parseFloat(card.querySelector(".current-price").textContent.replace("$", ""));
-    const productOldPrice = parseFloat(card.querySelector(".old-price").textContent.replace("$", ""));
-    const productImage = card.querySelector(".product-image img").src;
-    const productRating = card.querySelector(".product-rating").innerHTML;
-    
-    // Create product object
-    const product = {
-      id: productId,
-      name: productName,
-      category: productCategory,
-      price: productPrice,
-      oldPrice: productOldPrice,
-      image: productImage,
-      rating: productRating
-    };
-    
-    // Add event listener to Detail button
-    const detailBtn = card.querySelector(".btn-detail");
-    detailBtn.addEventListener("click", () => {
-      showProductDetails(product);
-    });
-    
-    // Add event listener to Add to Cart button
-    const addToCartBtn = card.querySelector(".btn-add-to-cart");
-    addToCartBtn.addEventListener("click", () => {
-      addToCart(product);
+  // --- COLLECTIONS LOGIC ---
+  function getProductImageUrl(image) {
+    if (!image) return 'images/placeholder-dress.jpg';
+    image = image.replace(/\\/g, '/').replace(/\\/g, '/');
+    if (image.startsWith('http')) return image;
+    if (image.startsWith('uploads/')) return 'http://localhost:3000/' + image;
+    return 'http://localhost:3000/uploads/' + image;
+  }
+
+  // Function to render collection products
+  async function renderCollectionsProducts(collection, page = 1) {
+    try {
+      console.log('Gọi API collection:', collection, page);
+      const response = await fetch(`${API_URL}/products/collection?collection=${collection}&page=${page}&limit=4`);
+      const data = await response.json();
+      console.log('Kết quả API:', data);
+      const productsGrid = document.querySelector('.collections-products-grid');
+      const paginationContainer = document.querySelector('.collections-pagination');
+      if (!productsGrid) return;
+      // Clear existing products
+      productsGrid.innerHTML = '';
+      if (data.products && data.products.length > 0) {
+        data.products.forEach(product => {
+          const productCard = document.createElement('div');
+          productCard.className = 'product-card';
+          productCard.innerHTML = `
+            <div class="product-image">
+              <img src="${getProductImageUrl(product.image)}" alt="${product.name}">
+            </div>
+            <div class="product-info">
+              <h3 class="product-title">${product.name}</h3>
+              <div class="product-price"><b>$${product.price}</b></div>
+              <div class="product-buttons">
+                <button class="btn-detail">Detail</button>
+                <button class="btn-add-to-cart">Add to Cart</button>
+              </div>
+            </div>
+          `;
+          // Nút Detail
+          const detailBtn = productCard.querySelector('.btn-detail');
+          detailBtn.addEventListener('click', () => {
+            localStorage.setItem("selectedProduct", JSON.stringify(product));
+            window.location.href = "sanpham.html";
+          });
+          // Nút Add to Cart
+          const addToCartBtn = productCard.querySelector('.btn-add-to-cart');
+          console.log('Found add to cart button:', addToCartBtn);
+          addToCartBtn.addEventListener('click', async (e) => {
+            console.log('Add to cart button clicked');
+            console.log('Event target:', e.target);
+            console.log('Product data:', product);
+            await addToCart({
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image: product.image,
+              color: product.color,
+              size: product.size,
+              brand: product.brand,
+              collection: product.collection,
+              description: product.description
+            });
+          });
+          productsGrid.appendChild(productCard);
+        });
+        // Render pagination if needed
+        if (data.total > 4) {
+          const totalPages = Math.ceil(data.total / 4);
+          renderPagination(paginationContainer, page, totalPages, collection);
+        } else {
+          paginationContainer.innerHTML = '';
+        }
+      } else {
+        productsGrid.innerHTML = '<p class="no-products">No products found in this collection.</p>';
+        paginationContainer.innerHTML = '';
+      }
+    } catch (error) {
+      console.error('Error fetching collection products:', error);
+      const productsGrid = document.querySelector('.collections-products-grid');
+      if (productsGrid) {
+        productsGrid.innerHTML = '<p class="error-message">Error loading products. Please try again later.</p>';
+      }
+    }
+  }
+
+  // Function to render pagination
+  function renderPagination(container, currentPage, totalPages, collection) {
+    container.innerHTML = '';
+    const pagination = document.createElement('div');
+    pagination.className = 'pagination';
+
+    // Prev button
+    if (currentPage > 1) {
+      const prevButton = document.createElement('button');
+      prevButton.textContent = 'Prev';
+      prevButton.className = 'page-btn';
+      prevButton.addEventListener('click', () => renderCollectionsProducts(collection, currentPage - 1));
+      pagination.appendChild(prevButton);
+    }
+
+    // Hiển thị tối đa 3 số trang liền nhau
+    let start = Math.max(1, currentPage - 1);
+    let end = Math.min(totalPages, start + 2);
+    if (end - start < 2) start = Math.max(1, end - 2);
+    for (let i = start; i <= end; i++) {
+      const pageButton = document.createElement('button');
+      pageButton.textContent = i;
+      pageButton.className = 'page-btn';
+      if (i === currentPage) {
+        pageButton.classList.add('active');
+      }
+      pageButton.addEventListener('click', () => renderCollectionsProducts(collection, i));
+      pagination.appendChild(pageButton);
+    }
+
+    // Next button
+    if (currentPage < totalPages) {
+      const nextButton = document.createElement('button');
+      nextButton.textContent = 'Next';
+      nextButton.className = 'page-btn';
+      nextButton.addEventListener('click', () => renderCollectionsProducts(collection, currentPage + 1));
+      pagination.appendChild(nextButton);
+    }
+
+    container.appendChild(pagination);
+  }
+
+  // Function to generate rating stars
+  function generateRatingStars(rating) {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    let stars = '';
+    for (let i = 0; i < fullStars; i++) {
+      stars += '<i class="fas fa-star"></i>';
+    }
+    if (hasHalfStar) {
+      stars += '<i class="fas fa-star-half-alt"></i>';
+    }
+    for (let i = 0; i < emptyStars; i++) {
+      stars += '<i class="far fa-star"></i>';
+    }
+    return stars;
+  }
+
+  // Gắn sự kiện cho các nút collection
+  const collectionButtons = document.querySelectorAll('.collection-btn');
+  collectionButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      console.log('Click button:', button.dataset.collection); // debug
+      // Remove active class from all buttons
+      collectionButtons.forEach(btn => btn.classList.remove('active'));
+      // Add active class to clicked button
+      button.classList.add('active');
+      // Get collection name and render products
+      const collection = button.dataset.collection;
+      renderCollectionsProducts(collection);
     });
   });
+  // Load initial collection (Spring)
+  renderCollectionsProducts('Spring');
 });

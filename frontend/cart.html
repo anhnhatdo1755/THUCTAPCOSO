@@ -75,8 +75,8 @@
         }
 
         .product-image {
-            width: 100px;
-            height: 130px;
+            width: 80px;
+            height: 80px;
             margin-right: 20px;
             border: 1px solid #eee;
             overflow: hidden;
@@ -261,13 +261,7 @@
                         <li><a href="cart.html">Cart</a></li>
                     </ul>
                 </nav>
-                <div class="icons-group">
-                    <a href="#" class="icon-link"><i class="fas fa-user"></i></a>
-                    <a href="cart.html" class="icon-link cart-icon">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="cart-count">1</span>
-                    </a>
-                </div>
+                <div class="sign-up"></div>
             </div>
         </div>
     </header>
@@ -371,50 +365,8 @@
         </div>
     </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const quantityInput = document.querySelector('.quantity-input');
-            const removeBtn = document.querySelector('.remove-btn');
-            const cartTableBody = document.querySelector('.cart-table tbody');
-            const subtotalElement = document.querySelector('.subtotal span:last-child');
-            const cartContainer = document.querySelector('.cart-container');
-            const unitPrice = 14.90;
-
-            function updatePrice() {
-                let quantity = parseInt(quantityInput.value) || 1;
-                let itemTotal = (quantity * unitPrice).toFixed(2);
-                document.querySelector('[data-label="Total"]').textContent = `$${itemTotal}`;
-                let subtotal = quantity * unitPrice;
-                subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
-            }
-
-            // Cho phép nhập số lượng trực tiếp
-            quantityInput.addEventListener('input', function () {
-                if (this.value < 1 || isNaN(this.value)) {
-                    this.value = 1;
-                }
-                updatePrice();
-            });
-            // chuyên
-            document.querySelector('.checkout-btn').addEventListener('click', function () {
-                window.location.href = 'checkout.html';
-            });
-
-            // Xóa sản phẩm
-            removeBtn.addEventListener('click', function () {
-                cartTableBody.innerHTML = '';
-                subtotalElement.textContent = '$0.00';
-
-                // Hiển thị thông báo khi giỏ hàng trống
-                cartContainer.innerHTML = '<h2 class="empty-cart">Your cart is empty. <a href="shop.html">Start shopping now!</a></h2>';
-            });
-        });
-    </script>
     <script src="cart.js"></script>
     <script src="header-auth.js"></script>
-    <script src="update-script.js"></script>
-    <script src="auth-check.js"></script>
-    <script src="signinredirect.js"></script>
 
 </body>
 

@@ -73,8 +73,55 @@ class Product {
             const pool = await sql.connect(config);
             const result = await pool.request()
                 .input('id', sql.Int, id)
-                .query('UPDATE Products SET status = ? WHERE id = @id', ['inactive']);
+                .input('status', sql.VarChar, 'inactive')
+                .query('UPDATE Products SET status = @status WHERE id = @id');
             return result.rowsAffected[0];
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    static async countAll() {
+        try {
+            const pool = await sql.connect(config);
+            const result = await pool.request().query('SELECT COUNT(*) as total FROM Products');
+            return result.recordset[0].total;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    static async findPaginated(offset, limit, filters = {}) {
+        try {
+            const pool = await sql.connect(config);
+            let query = 'SELECT * FROM Products WHERE 1=1';
+            if (!filters.status) filters.status = 'active';
+            if (filters.size) query += ` AND size = @size`;
+            if (filters.color) query += ` AND color = @color`;
+            if (filters.minPrice) query += ` AND price >= @minPrice`;
+            if (filters.maxPrice) query += ` AND price <= @maxPrice`;
+            if (filters.brand) {
+                const brands = filters.brand.split(',').map(b => `'${b}'`).join(',');
+                query += ` AND brand IN (${brands})`;
+            }
+            if (filters.collection) {
+                const collections = filters.collection.split(',').map(c => `'${c.toLowerCase()}'`).join(',');
+                query += ` AND collection IS NOT NULL AND LOWER(collection) IN (${collections})`;
+            }
+            if (filters.status) query += ` AND LOWER(status) = LOWER(@status)`;
+            query += ' ORDER BY id DESC OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY';
+
+            const request = pool.request()
+                .input('offset', sql.Int, offset)
+                .input('limit', sql.Int, limit);
+            if (filters.size) request.input('size', sql.VarChar, filters.size);
+            if (filters.color) request.input('color', sql.VarChar, filters.color);
+            if (filters.minPrice) request.input('minPrice', sql.Decimal, filters.minPrice);
+            if (filters.maxPrice) request.input('maxPrice', sql.Decimal, filters.maxPrice);
+            if (filters.status) request.input('status', sql.VarChar, filters.status);
+
+            const result = await request.query(query);
+            return result.recordset;
         } catch (err) {
             throw err;
         }

@@ -1,6 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
     const API_URL = 'http://localhost:3000/api';
     let token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'signin.html';
+        return;
+    }
     let user = JSON.parse(localStorage.getItem('user'));
 
     // Check if user is logged in
@@ -68,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const item = cart[0];
                 productContainer.innerHTML = `
                     <div class="product-image">
-                        <img src="${item.image || "images/placeholder-dress.jpg"}" alt="${item.name}">
+                        <img src="${getProductImageUrl(item.image) || "images/placeholder-dress.jpg"}" alt="${item.name}">
                         <span class="product-count">${item.quantity}</span>
                     </div>
                     <div class="product-details">
@@ -121,26 +125,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!this.value) {
                 shippingElement.textContent = formatPrice(0);
             } else if (this.value === 'Hà Nội') {
-                shippingElement.textContent = formatPrice(20000);
+                shippingElement.textContent = formatPrice(10);
             } else {
-                shippingElement.textContent = formatPrice(100000);
+                shippingElement.textContent = formatPrice(20);
             }
             updateTotal();
-        });
-    }
-
-    // Xử lý chọn phương thức thanh toán
-    const paymentRadios = document.getElementsByName('payment-method');
-    const cardFields = document.querySelector('.payment-card-fields');
-    if (paymentRadios && cardFields) {
-        paymentRadios.forEach(radio => {
-            radio.addEventListener('change', function () {
-                if (this.value === 'cod') {
-                    cardFields.style.display = 'none';
-                } else {
-                    cardFields.style.display = '';
-                }
-            });
         });
     }
 
@@ -164,58 +153,43 @@ document.addEventListener("DOMContentLoaded", () => {
     if (payButton) {
         payButton.addEventListener('click', async (e) => {
             e.preventDefault();
-            let paymentMethod = 'card';
-            if (document.querySelector('input[name="payment-method"]:checked').value === 'cod') {
-                paymentMethod = 'cod';
-            }
+            let paymentMethod = 'cod';
             // Validate các trường bắt buộc
             const name = document.getElementById('name-input').value;
             const address = document.querySelector('input[placeholder="Địa chỉ"]').value;
-            if (!name || !address || !citySelect.value) {
-                alert('Vui lòng nhập đầy đủ thông tin giao hàng');
+            const phoneInput = document.getElementById('phone-input');
+            const phone = phoneInput ? phoneInput.value.trim() : '';
+            console.log('Phone value:', phone); // Debug log
+            if (!name || !address || !citySelect.value || !phone) {
+                alert('Vui lòng nhập đầy đủ thông tin giao hàng (tên, địa chỉ, số điện thoại và thành phố)');
                 return;
             }
-            if (paymentMethod === 'card') {
-                const cardNumber = document.querySelector('input[placeholder="Card Number"]').value;
-                const expirationDate = document.querySelector('input[placeholder="Expiration Date"]').value;
-                const securityCode = document.querySelector('input[placeholder="Security Code"]').value;
-                const cardHolder = document.querySelector('input[placeholder="Card Holder Name"]').value;
-                if (!cardNumber || !expirationDate || !securityCode || !cardHolder) {
-                    alert('Vui lòng nhập đầy đủ thông tin thẻ');
-                    return;
-                }
-                // Simple validation for card number (16 digits)
-                if (!/^\d{16}$/.test(cardNumber.replace(/\s/g, ""))) {
-                    alert("Please enter a valid 16-digit card number");
-                    return;
-                }
-
-                // Simple validation for expiration date (MM/YY)
-                if (!/^\d{2}\/\d{2}$/.test(expirationDate)) {
-                    alert("Please enter expiration date in MM/YY format");
-                    return;
-                }
-
-                // Simple validation for security code (3 digits)
-                if (!/^\d{3}$/.test(securityCode)) {
-                    alert("Please enter a valid 3-digit security code");
-                    return;
-                }
+            // Validate số điện thoại
+            if (!/^[0-9]{10}$/.test(phone)) {
+                alert('Số điện thoại phải có 10 chữ số');
+                return;
             }
             // Lấy thêm các trường contact
             const email = document.querySelector('input[type="email"]').value;
-            const phone = document.getElementById('phone-input').value;
             // Lấy phí shipping hiện tại
             let shippingFee = 0;
-            if (citySelect.value === 'Hà Nội') shippingFee = 20000;
-            else if (citySelect.value) shippingFee = 100000;
+            if (citySelect.value === 'Hà Nội') shippingFee = 10;
+            else if (citySelect.value) shippingFee = 20;
             // Lấy tổng tiền hàng
             const subtotalElement = document.querySelector('.price-row:first-child span:last-child');
             let totalPrice = 0;
             if (subtotalElement) {
-                // Đảm bảo lấy đúng kiểu số, không phải string
                 totalPrice = Number(subtotalElement.textContent.replace(/[^\d.]/g, ''));
             }
+            console.log('Order data:', { // Debug log
+                name,
+                phone,
+                email,
+                address,
+                city: citySelect.value,
+                shippingFee,
+                totalPrice
+            });
             // Gửi order
             try {
                 const response = await fetch(`${API_URL}/checkout`, {
@@ -248,5 +222,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initialize the checkout page
     loadCheckoutData();
 });
+
+function getProductImageUrl(image) {
+    if (!image) return 'images/placeholder-dress.jpg';
+    image = image.replace(/\\/g, '/').replace(/\\/g, '/');
+    if (image.startsWith('http')) return image;
+    if (image.startsWith('uploads/')) return 'http://localhost:3000/' + image;
+    return 'http://localhost:3000/uploads/' + image;
+}
   
   

@@ -38,23 +38,6 @@
             <div class="product-container">
                 <!-- Product Images -->
                 <div class="product-images">
-                    <div class="product-thumbnails">
-                        <div class="thumbnail active">
-                            <img src="images/whiteclothes.png" alt="Denim Jacket - Purple">
-                        </div>
-                        <div class="thumbnail">
-                            <img src="images/whiteclothes.png" alt="Denim Jacket - Red">
-                        </div>
-                        <div class="thumbnail">
-                            <img src="images/whiteclothes.png" alt="Denim Jacket - Model">
-                        </div>
-                        <div class="thumbnail">
-                            <img src="images/fashion2.png" alt="Denim Jacket - Blue">
-                        </div>
-                        <div class="thumbnail">
-                            <img src="images/responsive-image.png" alt="Denim Jacket - Black">
-                        </div>
-                    </div>
                     <div class="product-main-image">
                         <img src="images/jacket-main.png" alt="Denim Jacket">
                     </div>
@@ -63,23 +46,10 @@
                 <!-- Product Info -->
                 <div class="product-info">
                     <div class="product-brand">FASCO</div>
-                    <h1 class="product-title">Denim Jacket</h1>
-                    
-                    <div class="product-rating">
-                        <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <span class="rating-count">(3)</span>
-                    </div>
+                    <div class="product-title">Denim Jacket</div>
                     
                     <div class="product-price">
                         <span class="current-price">$39.00</span>
-                        <span class="old-price">$69.00</span>
-                        <span class="discount-badge">Save 43%</span>
                     </div>
                     <div class="product-stock">
                         <span>Only <strong>9 item(s)</strong> left in stock!</span>
@@ -102,9 +72,13 @@
                         <div class="option-group">
                             <label>Color: Blue</label>
                             <div class="color-options">
-                                <button class="color-option blue active"></button>
+                                <button class="color-option blue"></button>
                                 <button class="color-option black"></button>
                                 <button class="color-option pink"></button>
+                                <button class="color-option red"></button>
+                                <button class="color-option yellow"></button>
+                                <button class="color-option white"></button>
+                                <button class="color-option gray"></button>
                             </div>
                         </div>
                         
@@ -192,82 +166,9 @@
         <div class="container">
             <h2 class="section-title">People Also Loved</h2>
             <p class="section-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse quis ultrices sollicitudin sem. Scelerisque duis ultricies sollicitudin.</p>
-            
             <div class="related-products-slider">
                 <div class="related-products-container">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="images/shinnydress.png" alt="Black Dress">
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-title">Black Dress</h3>
-                            <div class="product-category">Evening dresses</div>
-                            <div class="product-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="product-price">
-                                <span class="current-price">$89.50</span>
-                                <span class="old-price">$119.50</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="images/whitedress.png" alt="Blue Dress">
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-title">Blue Dress</h3>
-                            <div class="product-category">Summer dresses</div>
-                            <div class="product-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="product-price">
-                                <span class="current-price">$69.50</span>
-                                <span class="old-price">$89.50</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="images/whitedress.png" alt="White Top">
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-title">White Top</h3>
-                            <div class="product-category">Casual tops</div>
-                            <div class="product-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="product-price">
-                                <span class="current-price">$39.50</span>
-                                <span class="old-price">$59.50</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="slider-controls">
-                    <button class="slider-arrow prev"><i class="fas fa-chevron-left"></i></button>
-                    <div class="slider-dots">
-                        <span class="slider-dot active"></span>
-                        <span class="slider-dot"></span>
-                        <span class="slider-dot"></span>
-                        <span class="slider-dot"></span>
-                    </div>
-                    <button class="slider-arrow next"><i class="fas fa-chevron-right"></i></button>
+                    <!-- Sản phẩm liên quan sẽ được render động bằng JS -->
                 </div>
             </div>
         </div>
@@ -330,9 +231,5 @@
 
     <script src="sanpham.js"></script>
     <script src="header-auth.js"></script>
-    <script src="update-script.js"></script>
-    <script src="auth-check.js"></script>
-    <script src="signinredirect.js"></script>
-    <script src="auto-direct.js"></script>
 </body>
 </html>
