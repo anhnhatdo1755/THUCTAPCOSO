@@ -573,7 +573,6 @@
                 <div class="content-section">
                     <div class="section-header">
                         <h2>Recent Orders</h2>
-                        <button type="button" class="btn btn-primary">View All</button>
                     </div>
                     <table class="data-table">
                         <thead>
@@ -1374,7 +1373,7 @@
 
             // ORDERS CRUD
             async function fetchOrders(page) {
-                let url = `${API_URL}/orders?page=${page}&limit=10`;
+                let url = `${API_URL}/orders?page=${page}&limit=10&sort=date&order=desc`;
                 const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
                 return await res.json();
             }

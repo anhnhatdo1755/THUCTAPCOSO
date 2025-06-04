@@ -109,6 +109,15 @@ class Product {
                 query += ` AND collection IS NOT NULL AND LOWER(collection) IN (${collections})`;
             }
             if (filters.status) query += ` AND LOWER(status) = LOWER(@status)`;
+            if (filters.category) {
+                const ids = filters.category.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
+                if (ids.length > 0) {
+                    query += ` AND Categoryid IN (${ids.join(',')})`;
+                }
+            }
+            if (filters.name) {
+                query += ` AND LOWER(name) LIKE @name`;
+            }
             query += ' ORDER BY id DESC OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY';
 
             const request = pool.request()
@@ -119,6 +128,7 @@ class Product {
             if (filters.minPrice) request.input('minPrice', sql.Decimal, filters.minPrice);
             if (filters.maxPrice) request.input('maxPrice', sql.Decimal, filters.maxPrice);
             if (filters.status) request.input('status', sql.VarChar, filters.status);
+            if (filters.name) request.input('name', sql.VarChar, `%${filters.name.toLowerCase()}%`);
 
             const result = await request.query(query);
             return result.recordset;
@@ -128,4 +138,4 @@ class Product {
     }
 }
 
-module.exports = Product; 
+module.exports = Product;

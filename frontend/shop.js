@@ -13,7 +13,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       maxPrice: '',
       brand: '',
       collection: '',
-      category: ''
+      category: '',
+      name: '' // Thêm trường name để filter theo tên
     };
 
     // Check if user is logged in
@@ -40,6 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (currentFilters.brand) filterQuery += `&brand=${encodeURIComponent(currentFilters.brand)}`;
             if (currentFilters.collection) filterQuery += `&collection=${encodeURIComponent(currentFilters.collection)}`;
             if (currentFilters.category) filterQuery += `&category=${encodeURIComponent(currentFilters.category)}`;
+            if (currentFilters.name) filterQuery += `&name=${encodeURIComponent(currentFilters.name)}`;
 
             // Lấy tổng số sản phẩm để tạo phân trang
             const response = await fetch(`${API_URL}/products?page=${page}&limit=${PRODUCTS_PER_PAGE}${filterQuery}`);
@@ -170,7 +172,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Cart Functionality (giữ nguyên)
+    // Cart Functionality 
     async function getCart() {
         try {
             const response = await fetch(`${API_URL}/cart`, {
@@ -312,18 +314,44 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     });
 
-    // Category Filter Functionality
-    const categoryCheckboxes = document.querySelectorAll('.category-options input[type="checkbox"]');
-    categoryCheckboxes.forEach((checkbox) => {
-      checkbox.addEventListener('change', () => {
-        // Lấy tất cả các category đang được chọn
-        const selectedCategories = Array.from(categoryCheckboxes)
-          .filter(cb => cb.checked)
-          .map(cb => cb.value);
-        currentFilters.category = selectedCategories.join(',');
-        fetchAndRenderProducts(1);
+    // --- CATEGORY FILTER (RADIO) ---
+    async function renderCategoryRadios() {
+      const container = document.querySelector('.category-options-radio');
+      if (!container) return;
+      try {
+        const res = await fetch('http://localhost:3000/api/categories');
+        const categories = await res.json();
+        container.innerHTML = `<label><input type="radio" name="category-radio" value="" checked> Tất cả</label><br>` +
+          categories.map(cat =>
+            `<label><input type="radio" name="category-radio" value="${cat.id}"> ${cat.categoryName}</label><br>`
+          ).join('');
+        // Gắn event
+        const radios = container.querySelectorAll('input[type="radio"]');
+        radios.forEach(radio => {
+          radio.addEventListener('change', () => {
+            currentFilters.category = radio.value;
+            fetchAndRenderProducts(1);
+          });
+        });
+      } catch (err) {
+        container.innerHTML = '<p>Không thể tải danh mục!</p>';
+      }
+    }
+    // Gọi khi load trang
+    renderCategoryRadios();
+
+    // --- SEARCH BY NAME ---
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) {
+      let searchTimeout;
+      searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          currentFilters.name = this.value.trim();
+          fetchAndRenderProducts(1);
+        }, 400);
       });
-    });
+    }
 
     function getProductImageUrl(image) {
         if (!image) return 'images/placeholder-dress.jpg';
@@ -332,35 +360,5 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (image.startsWith('uploads/')) return 'http://localhost:3000/' + image;
         return 'http://localhost:3000/uploads/' + image;
     }
-
-    // Thêm hàm này sau khi DOMContentLoaded
-    async function renderCategoryFilters() {
-      const categoryContainer = document.querySelector('.category-options');
-      if (!categoryContainer) return;
-      try {
-        const res = await fetch('http://localhost:3000/api/categories');
-        const categories = await res.json();
-        categoryContainer.innerHTML = categories.map(cat =>
-          `<label><input type="checkbox" value="${cat.id}"> ${cat.categoryName}</label><br>`
-        ).join('');
-        // Gắn lại event cho các checkbox mới render
-        const categoryCheckboxes = categoryContainer.querySelectorAll('input[type="checkbox"]');
-        categoryCheckboxes.forEach((checkbox) => {
-          checkbox.addEventListener('change', () => {
-            const selectedCategories = Array.from(categoryCheckboxes)
-              .filter(cb => cb.checked)
-              .map(cb => cb.value);
-            currentFilters.category = selectedCategories.join(',');
-            fetchAndRenderProducts(1);
-          });
-        });
-      } catch (err) {
-        categoryContainer.innerHTML = '<p>Không thể tải danh mục!</p>';
-      }
-    }
-
-    // Gọi hàm này khi load trang
-    renderCategoryFilters();
   })
-  
-  
+

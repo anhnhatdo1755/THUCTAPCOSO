@@ -767,7 +767,7 @@ app.get('/api/dashboard/recent-orders', async (req, res) => {
         c.paymentMethod,
         c.status
       FROM checkOut c
-      ORDER BY c.date DESC
+      ORDER BY c.id DESC
     `;
     res.json(result.recordset);
   } catch (err) {

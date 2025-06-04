@@ -66,7 +66,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const detailBtn = document.createElement('button');
             detailBtn.className = 'btn-detail';
             detailBtn.textContent = 'Detail';
-            detailBtn.onclick = () => showProductDetails(product);
+            detailBtn.onclick = () => {
+  localStorage.setItem("selectedProduct", JSON.stringify(product));
+  window.location.href = "sanpham.html";
+};
             const addToCartBtn = document.createElement('button');
             addToCartBtn.className = 'btn-add-to-cart';
             addToCartBtn.textContent = 'Add to Cart';

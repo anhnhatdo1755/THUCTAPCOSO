@@ -16,6 +16,8 @@ class ProductController {
                 maxPrice: req.query.maxPrice || '',
                 brand: req.query.brand || '',
                 collection: req.query.collection || '',
+                category: req.query.category || '',
+                name: req.query.name || '', // Bổ sung dòng này để truyền filter name xuống model
                 status: req.query.status || 'active' // Mặc định chỉ lấy sản phẩm active
             };
 
@@ -158,4 +160,4 @@ class ProductController {
     }
 }
 
-module.exports = ProductController; 
+module.exports = ProductController;

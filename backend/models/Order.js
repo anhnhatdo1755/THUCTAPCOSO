@@ -77,7 +77,7 @@ class Order {
             if (status && status !== 'all') {
                 query += ` WHERE LOWER(c.status) = LOWER(@status)`;
             }
-            query += ` ORDER BY c.date DESC
+            query += ` ORDER BY c.id DESC
                     OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY`;
             const request = pool.request()
                 .input('offset', sql.Int, offset)
@@ -177,4 +177,4 @@ class Order {
     }
 }
 
-module.exports = Order; 
+module.exports = Order;
